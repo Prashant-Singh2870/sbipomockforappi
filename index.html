@@ -178,7 +178,7 @@
                 <!-- Actions / Controls -->
                 <div class="flex items-center gap-3">
                     <!-- Quick Live Test CTA -->
-                    <button onclick="launchExamModal('SBI PO Prelims Full Mock #42')" class="hidden lg:flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-sbi-blue to-sbi-lightBlue hover:from-sbi-lightBlue hover:to-sbi-blue rounded-xl shadow-md shadow-sbi-blue/20 transition-all hover:scale-[1.02]">
+                    <button onclick="launchExamModal(mockTests['1'].title, '1')" class="hidden lg:flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-sbi-blue to-sbi-lightBlue hover:from-sbi-lightBlue hover:to-sbi-blue rounded-xl shadow-md shadow-sbi-blue/20 transition-all hover:scale-[1.02]">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                         Live SBI Prelims Mock
                     </button>
@@ -257,7 +257,7 @@
                             <div class="text-xs text-slate-300">
                                 <i class="fa-solid fa-users text-sbi-cyan mr-1"></i> 34,210 Aspirants Took
                             </div>
-                            <button onclick="launchExamModal('SBI PO Prelims All-India Live Mock #48')" class="px-4 py-2 bg-sbi-cyan text-sbi-navy hover:bg-white font-extrabold text-xs rounded-xl shadow-lg transition duration-200 flex items-center gap-1.5">
+                            <button onclick="startRecommendedPaper()" class="px-4 py-2 bg-sbi-cyan text-sbi-navy hover:bg-white font-extrabold text-xs rounded-xl shadow-lg transition duration-200 flex items-center gap-1.5">
                                 <i class="fa-solid fa-play"></i> Start Now
                             </button>
                         </div>
@@ -518,7 +518,7 @@
                             </div>
                             <div class="pt-2 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
                                 <span class="text-[11px] text-amber-500 font-semibold"><i class="fa-solid fa-clock"></i> Unattempted</span>
-                                <button onclick="launchExamModal('SBI PO Mains Mock #04')" class="px-3 py-1.5 bg-sbi-blue hover:bg-sbi-lightBlue text-white font-bold text-xs rounded-lg shadow transition">
+                                <button onclick="notAvailableYet('Mains')" class="px-3 py-1.5 bg-sbi-blue hover:bg-sbi-lightBlue text-white font-bold text-xs rounded-lg shadow transition">
                                     Take Test
                                 </button>
                             </div>
@@ -538,7 +538,7 @@
                             </div>
                             <div class="pt-2 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
                                 <span class="text-[11px] text-slate-400 font-semibold">18,500+ Attempted</span>
-                                <button onclick="launchExamModal('SBI PO Prelims 2025 Memory Paper')" class="px-3 py-1.5 bg-sbi-blue hover:bg-sbi-lightBlue text-white font-bold text-xs rounded-lg shadow transition">
+                                <button onclick="notAvailableYet('Previous-year')" class="px-3 py-1.5 bg-sbi-blue hover:bg-sbi-lightBlue text-white font-bold text-xs rounded-lg shadow transition">
                                     Take Test
                                 </button>
                             </div>
@@ -558,7 +558,7 @@
                             </div>
                             <div class="pt-2 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
                                 <span class="text-[11px] text-purple-400 font-semibold"><i class="fa-solid fa-bolt"></i> AI Recommended</span>
-                                <button onclick="launchExamModal('Reasoning Booster: Puzzles & Seating #09')" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-lg shadow transition">
+                                <button onclick="notAvailableYet('Sectional')" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-lg shadow transition">
                                     Practice
                                 </button>
                             </div>
@@ -1049,45 +1049,14 @@
                                 <th class="p-2.5 text-right">Score</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
-                            <tr>
-                                <td class="p-2.5 font-bold">English Language</td>
-                                <td class="p-2.5">26 / 30</td>
-                                <td class="p-2.5 text-emerald-500 font-bold">24</td>
-                                <td class="p-2.5 text-red-500 font-bold">2</td>
-                                <td class="p-2.5 text-red-400">-0.50</td>
-                                <td class="p-2.5">16m 40s</td>
-                                <td class="p-2.5 text-right font-bold text-sbi-lightBlue">23.50</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2.5 font-bold">Quantitative Aptitude</td>
-                                <td class="p-2.5">31 / 35</td>
-                                <td class="p-2.5 text-emerald-500 font-bold">28</td>
-                                <td class="p-2.5 text-red-500 font-bold">3</td>
-                                <td class="p-2.5 text-red-400">-0.75</td>
-                                <td class="p-2.5">21m 15s</td>
-                                <td class="p-2.5 text-right font-bold text-sbi-lightBlue">27.25</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2.5 font-bold">Reasoning Ability</td>
-                                <td class="p-2.5">28 / 35</td>
-                                <td class="p-2.5 text-emerald-500 font-bold">23</td>
-                                <td class="p-2.5 text-red-500 font-bold">5</td>
-                                <td class="p-2.5 text-red-400">-1.25</td>
-                                <td class="p-2.5">21m 50s</td>
-                                <td class="p-2.5 text-right font-bold text-sbi-lightBlue">21.75</td>
-                            </tr>
-                        </tbody>
+                        <tbody id="sc-breakdown" class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Detailed Solutions Sample Box -->
             <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-3">
-                <div class="flex items-center justify-between text-xs">
-                    <span class="font-bold text-purple-700 dark:text-purple-300">AI Solution & Short-Trick Preview (Question #42 Quant)</span>
-                    <span class="px-2 py-0.5 bg-purple-500 text-white rounded font-bold text-[10px]">FASTER METHOD AVAILABLE</span>
-                </div>
+                <div id="sc-worked-example" class="hidden"></div>
                 <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
                     <strong>Question:</strong> Two pipes A and B can fill a tank in 12 min and 18 min respectively. If both pipes are opened simultaneously...
                 </p>
@@ -9075,6 +9044,7 @@ const ENGLISH_POOL = {"rc": [{"passage": "The Reserve Bank of India's Monetary P
 
             currentQuestionIndex = 0;
             currentExamSection = 0;
+            _secReset();
             switchExamSection(0);
             renderPalette();
             startExamTimer();
@@ -9298,6 +9268,7 @@ const ENGLISH_POOL = {"rc": [{"passage": "The Reserve Bank of India's Monetary P
                     : `Below Cutoff (${cutoff.toFixed(1)})`;
                 cutEl.className = 'text-[10px] font-bold ' + (cleared ? 'text-emerald-500' : 'text-red-500');
             }
+            renderBreakdown();
             // remember the result so the grid can show it
             paperResults[activeMockId] = { score: s.score.toFixed(2), correct: s.correct, wrong: s.wrong, at: Date.now() };
             persistPapers();
@@ -9310,6 +9281,69 @@ const ENGLISH_POOL = {"rc": [{"passage": "The Reserve Bank of India's Monetary P
         }
         function closeScorecardModal() {
             document.getElementById('scorecard-modal').classList.add('hidden');
+        }
+
+
+        /* -------------------------------------------------------------
+           SECTION TIMING — real per-section time, so the breakdown table
+           reports measured data instead of the placeholder numbers that
+           used to be baked into the HTML.
+        ------------------------------------------------------------- */
+        let _secTimes = {}, _secLast = null, _secCur = null;
+        function _secTick() {
+            if (_secCur !== null && _secLast !== null) {
+                _secTimes[_secCur] = (_secTimes[_secCur] || 0) + (Date.now() - _secLast);
+            }
+            _secLast = Date.now();
+        }
+        function _secReset() { _secTimes = {}; _secLast = Date.now(); _secCur = 'English Language'; }
+        function fmtDur(ms) {
+            const t = Math.max(0, Math.round(ms / 1000));
+            return Math.floor(t / 60) + 'm ' + String(t % 60).padStart(2, '0') + 's';
+        }
+
+        const _origSwitchSection = switchExamSection;
+        switchExamSection = function (secIdx) {
+            _secTick();
+            _secCur = ['English Language', 'Quantitative Aptitude', 'Reasoning Ability'][secIdx] || _secCur;
+            return _origSwitchSection.apply(this, arguments);
+        };
+
+        function renderBreakdown() {
+            const body = document.getElementById('sc-breakdown');
+            if (!body) return;
+            _secTick();
+            const rows = ['English Language', 'Quantitative Aptitude', 'Reasoning Ability'].map(sec => {
+                const qs = examQuestionsData.filter(q => q.section === sec);
+                const correct = qs.filter(q => q.userChoice === q.correctOption).length;
+                const wrong = qs.filter(q => q.userChoice !== null && q.userChoice !== q.correctOption).length;
+                const neg = wrong * 0.25;
+                const score = correct - neg;
+                return `<tr>
+                    <td class="p-2.5 font-bold">${sec}</td>
+                    <td class="p-2.5">${correct + wrong} / ${qs.length}</td>
+                    <td class="p-2.5 text-emerald-500 font-bold">${correct}</td>
+                    <td class="p-2.5 text-red-500 font-bold">${wrong}</td>
+                    <td class="p-2.5 text-red-400">${neg ? '-' + neg.toFixed(2) : '0.00'}</td>
+                    <td class="p-2.5">${fmtDur(_secTimes[sec] || 0)}</td>
+                    <td class="p-2.5 text-right font-bold text-sbi-lightBlue">${score.toFixed(2)}</td>
+                </tr>`;
+            });
+            body.innerHTML = rows.join('');
+        }
+
+        // The hero card recommends a paper; give the student a real one.
+        function startRecommendedPaper() {
+            if (paperSeeds.length) { startGeneratedPaper(paperSeeds[paperSeeds.length - 1]); }
+            else { addPaper(true); }
+        }
+
+        // These formats are advertised in the UI but no such content exists yet.
+        // Saying so is better than silently serving a Prelims paper instead.
+        function notAvailableYet(kind) {
+            alert(kind + ' papers are not part of this build yet.\n\n' +
+                  'Available now: 3 hand-audited Prelims mocks, plus unlimited generated ' +
+                  'Prelims papers (30 English / 35 Quant / 35 Reasoning, 60 minutes).');
         }
 
 
