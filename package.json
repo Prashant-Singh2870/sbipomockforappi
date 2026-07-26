@@ -1,0 +1,12 @@
+{
+  "name": "sbi-po-mock-engine",
+  "version": "1.0.0",
+  "description": "Self-verifying SBI PO Prelims mock test generator. Unlimited papers, no server.",
+  "scripts": {
+    "test": "node src/test_engine.js && node src/test_mock.js",
+    "test:engine": "node src/test_engine.js",
+    "test:mocks": "node src/test_mock.js"
+  },
+  "license": "MIT",
+  "private": true
+}
