@@ -198,7 +198,7 @@
                     <div class="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
                         <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Student Profile" class="w-9 h-9 rounded-xl object-cover ring-2 ring-sbi-lightBlue/40">
                         <div class="hidden sm:block text-left">
-                            <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-none">Appi baby</h4>
+                            <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-none">Appi </h4>
                             <span class="text-[10px] font-semibold text-emerald-500">AIR #142 • SBI Aspirant</span>
                         </div>
                     </div>
@@ -915,7 +915,7 @@
                 <div class="p-3 bg-slate-200 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 flex items-center gap-3">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="w-10 h-10 rounded-lg object-cover ring-2 ring-sbi-blue">
                     <div class="text-xs">
-                        <h4 class="font-bold text-slate-900 dark:text-white">Appi baby</h4>
+                        <h4 class="font-bold text-slate-900 dark:text-white">Appi </h4>
                         <p class="text-[10px] text-slate-500">Roll No: 2026984210</p>
                     </div>
                 </div>
@@ -1081,10 +1081,71 @@
                 <button onclick="closeScorecardModal()" class="px-5 py-2 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs rounded-xl">
                     Close Scorecard
                 </button>
+                <button onclick="openReviewMode(); closeScorecardModal();" class="px-5 py-2 bg-sbi-blue hover:bg-sbi-blue/90 text-white font-bold text-xs rounded-xl shadow flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass"></i> Review Wrong Answers
+                </button>
                 <button onclick="toggleAiDrawer(); closeScorecardModal();" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow">
                     Ask AI Mentor For Detailed Review
                 </button>
             </div>
+
+        </div>
+    </div>
+
+    <!-- ================================================================
+         REVIEW MODE — Post-Exam "Review Wrong Answers" View
+         Shows every question the user got wrong (default filter), with
+         the user's choice, the correct answer, and a full explanation.
+    ================================================================= -->
+    <div id="view-review" class="hidden fixed inset-0 z-50 bg-slate-50 dark:bg-[#070C18] overflow-y-auto">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-sbi-blue/10 text-sbi-blue dark:text-sbi-cyan flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Review Your Answers</h2>
+                        <p class="text-xs text-slate-500" id="review-summary-line">Loading...</p>
+                    </div>
+                </div>
+                <button onclick="closeReviewMode()" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Filter Chips -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="setReviewFilter('wrong')" id="review-filter-wrong" class="review-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-red-500 text-white shadow">
+                    <i class="fa-solid fa-xmark mr-1"></i> Wrong Answers
+                </button>
+                <button onclick="setReviewFilter('unattempted')" id="review-filter-unattempted" class="review-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <i class="fa-regular fa-circle mr-1"></i> Unattempted
+                </button>
+                <button onclick="setReviewFilter('correct')" id="review-filter-correct" class="review-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <i class="fa-solid fa-check mr-1"></i> Correct Answers
+                </button>
+                <button onclick="setReviewFilter('all')" id="review-filter-all" class="review-filter-btn px-4 py-1.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <i class="fa-solid fa-list mr-1"></i> All Questions
+                </button>
+
+                <div class="ml-auto flex items-center gap-2">
+                    <select id="review-topic-filter" onchange="renderReviewList()" class="text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1.5 text-slate-700 dark:text-slate-300">
+                        <option value="all">All Topics</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Weak Topics Mini Bars -->
+            <div class="glass-card rounded-2xl p-4 space-y-3">
+                <h4 class="font-bold text-xs text-slate-900 dark:text-white uppercase tracking-wide">Topics You Should Revise (Most Mistakes First)</h4>
+                <div id="weak-topics-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Question List -->
+            <div id="review-questions-list" class="space-y-4 pb-10"></div>
 
         </div>
     </div>
@@ -1103,89 +1164,2108 @@
         let isExamPaused = false;
 
         const examQuestionsData = [
-            // Section 0: English (30 Qs mock sample)
-            {
-                section: "English Language",
-                passage: "Read the following passage carefully: The financial technology (Fintech) landscape in India has undergone a seismic shift in recent years, spearheaded by the adoption of Unified Payments Interface (UPI) and AI-driven credit assessment models. Central banks have increasingly emphasized consumer data privacy while encouraging open banking APIs...",
-                question: "According to the passage, what is the primary catalyst behind India's recent fintech shift?",
-                options: [
-                    "A) Strict physical branch expansion rules by RBI",
-                    "B) Rapid adoption of UPI and AI-driven credit assessment models",
-                    "C) Total replacement of cash with international credit cards",
-                    "D) Decline in smartphone user base across rural regions",
-                    "E) Elimination of open banking API frameworks"
-                ],
-                correctOption: 1,
-                userChoice: null,
-                status: 'status-not-visited' // status-not-visited, status-not-answered, status-answered, status-marked, status-ans-marked
-            },
-            {
-                section: "English Language",
-                passage: null,
-                question: "In the sentence below, identify the part containing a grammatical error: 'Neither the Branch Manager (A) / nor the senior clerks (B) / was present at the conference (C) / regarding NPA resolution (D) / No Error (E)'",
-                options: [
-                    "A) Neither the Branch Manager",
-                    "B) nor the senior clerks",
-                    "C) was present at the conference",
-                    "D) regarding NPA resolution",
-                    "E) No Error"
-                ],
-                correctOption: 2,
-                userChoice: null,
-                status: 'status-not-visited'
-            },
-            // Section 1: Quantitative Aptitude
-            {
-                section: "Quantitative Aptitude",
-                passage: null,
-                question: "Find the approximate value of (?) in the given equation: 439.98 ÷ 11.02 + 15.99 × 4.05 - 19.98 = ?",
-                options: [
-                    "A) 84",
-                    "B) 104",
-                    "C) 72",
-                    "D) 96",
-                    "E) 112"
-                ],
-                correctOption: 0,
-                userChoice: null,
-                status: 'status-not-visited'
-            },
-            // Section 2: Reasoning Ability
-            {
-                section: "Reasoning Ability",
-                passage: "Eight persons (A, B, C, D, E, F, G, H) are sitting around a circular table facing towards the center. A sits third to the left of B. Only two persons sit between B and C. G sits immediate right of C...",
-                question: "Who among the following sits third to the right of G?",
-                options: [
-                    "A) D",
-                    "B) E",
-                    "C) F",
-                    "D) A",
-                    "E) H"
-                ],
-                correctOption: 3,
-                userChoice: null,
-                status: 'status-not-visited'
-            }
-        ];
+    {
+        "id": "m1-q001",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Moderate",
+        "passage": "The Reserve Bank of India's Monetary Policy Committee (MPC) meets periodically to review the repo rate, the rate at which the central bank lends short-term funds to commercial banks. A cut in the repo rate typically makes borrowing cheaper for banks, which in turn can lower interest rates on loans to businesses and individuals, stimulating spending and investment. However, if inflation is already high, cutting rates can worsen price rises, forcing the MPC to balance growth concerns against price stability. Conversely, raising the repo rate makes borrowing costlier, which tends to cool down an overheated economy but can also slow job creation. The MPC operates under a flexible inflation-targeting framework, mandated to keep retail inflation within a specified band while supporting sustainable economic growth. Its decisions are closely watched by markets, as they influence everything from home loan EMIs to the value of the rupee.",
+        "question": "What is the central theme of the passage?",
+        "options": [
+            "A) The history of the Reserve Bank of India",
+            "B) How the MPC's repo rate decisions balance economic growth against inflation control",
+            "C) The process of printing new currency notes",
+            "D) Why the rupee is the strongest currency in Asia",
+            "E) The list of all committee members of the RBI"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage centres entirely on the repo rate as a tool the MPC uses to balance growth (via cheaper/costlier borrowing) against inflation control — that trade-off is the throughline of every sentence. Option A, C, D and E are not discussed anywhere in the passage at all, so they can be eliminated purely on the grounds of not being mentioned.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q002",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Easy",
+        "passage": "The Reserve Bank of India's Monetary Policy Committee (MPC) meets periodically to review the repo rate, the rate at which the central bank lends short-term funds to commercial banks. A cut in the repo rate typically makes borrowing cheaper for banks, which in turn can lower interest rates on loans to businesses and individuals, stimulating spending and investment. However, if inflation is already high, cutting rates can worsen price rises, forcing the MPC to balance growth concerns against price stability. Conversely, raising the repo rate makes borrowing costlier, which tends to cool down an overheated economy but can also slow job creation. The MPC operates under a flexible inflation-targeting framework, mandated to keep retail inflation within a specified band while supporting sustainable economic growth. Its decisions are closely watched by markets, as they influence everything from home loan EMIs to the value of the rupee.",
+        "question": "According to the passage, what is a likely effect of a repo rate cut?",
+        "options": [
+            "A) Loans become costlier for businesses",
+            "B) Bank interest rates fall, encouraging spending and investment",
+            "C) The rupee automatically strengthens against the dollar",
+            "D) Inflation always falls immediately",
+            "E) Job creation slows down sharply"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage explicitly states a repo cut makes borrowing cheaper for banks, which lowers loan interest rates and stimulates spending/investment. Option A is the reverse effect (that's what a rate hike does). Option E describes the effect of a rate hike, not a cut, so it's a classic 'swapped direction' distractor.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q003",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Moderate",
+        "passage": "The Reserve Bank of India's Monetary Policy Committee (MPC) meets periodically to review the repo rate, the rate at which the central bank lends short-term funds to commercial banks. A cut in the repo rate typically makes borrowing cheaper for banks, which in turn can lower interest rates on loans to businesses and individuals, stimulating spending and investment. However, if inflation is already high, cutting rates can worsen price rises, forcing the MPC to balance growth concerns against price stability. Conversely, raising the repo rate makes borrowing costlier, which tends to cool down an overheated economy but can also slow job creation. The MPC operates under a flexible inflation-targeting framework, mandated to keep retail inflation within a specified band while supporting sustainable economic growth. Its decisions are closely watched by markets, as they influence everything from home loan EMIs to the value of the rupee.",
+        "question": "The word 'overheated' as used in the passage most nearly means:",
+        "options": [
+            "A) Physically hot due to weather",
+            "B) An economy growing at an unsustainably fast, inflation-driving pace",
+            "C) A machine that has malfunctioned",
+            "D) A currency that has lost all value",
+            "E) A bank that has run out of cash reserves"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "In context, 'overheated economy' refers to an economy expanding so fast that demand outpaces supply, pushing up prices — which is exactly why raising rates is described as a way to 'cool it down'. Options A and C use the literal, non-economic sense of 'heat', which is a common trap in vocabulary-in-context questions.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q004",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Moderate",
+        "passage": "The Reserve Bank of India's Monetary Policy Committee (MPC) meets periodically to review the repo rate, the rate at which the central bank lends short-term funds to commercial banks. A cut in the repo rate typically makes borrowing cheaper for banks, which in turn can lower interest rates on loans to businesses and individuals, stimulating spending and investment. However, if inflation is already high, cutting rates can worsen price rises, forcing the MPC to balance growth concerns against price stability. Conversely, raising the repo rate makes borrowing costlier, which tends to cool down an overheated economy but can also slow job creation. The MPC operates under a flexible inflation-targeting framework, mandated to keep retail inflation within a specified band while supporting sustainable economic growth. Its decisions are closely watched by markets, as they influence everything from home loan EMIs to the value of the rupee.",
+        "question": "What can be inferred as a drawback of raising the repo rate?",
+        "options": [
+            "A) It has no effect on the economy at all",
+            "B) It can slow down job creation even as it controls inflation",
+            "C) It instantly eliminates inflation",
+            "D) It makes loans cheaper for consumers",
+            "E) It removes the RBI's inflation-targeting mandate"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage says raising the rate 'tends to cool down an overheated economy but can also slow job creation' — this 'but' explicitly signals the trade-off/drawback being tested. Option D contradicts the passage (a hike makes loans costlier, not cheaper).",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q005",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Difficult",
+        "passage": "The Reserve Bank of India's Monetary Policy Committee (MPC) meets periodically to review the repo rate, the rate at which the central bank lends short-term funds to commercial banks. A cut in the repo rate typically makes borrowing cheaper for banks, which in turn can lower interest rates on loans to businesses and individuals, stimulating spending and investment. However, if inflation is already high, cutting rates can worsen price rises, forcing the MPC to balance growth concerns against price stability. Conversely, raising the repo rate makes borrowing costlier, which tends to cool down an overheated economy but can also slow job creation. The MPC operates under a flexible inflation-targeting framework, mandated to keep retail inflation within a specified band while supporting sustainable economic growth. Its decisions are closely watched by markets, as they influence everything from home loan EMIs to the value of the rupee.",
+        "question": "The word 'mandated' in the passage is closest in meaning to:",
+        "options": [
+            "A) Suggested informally",
+            "B) Officially required or authorised",
+            "C) Forbidden by law",
+            "D) Optional and discretionary",
+            "E) Cancelled"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Mandated' means formally required or authorised to do something — here, the MPC is formally required to keep inflation within a target band. Option A ('suggested') is a common wrong choice because it softens the word's meaning, but 'mandated' implies obligation, not mere suggestion.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q006",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Difficult",
+        "passage": "The Reserve Bank of India's Monetary Policy Committee (MPC) meets periodically to review the repo rate, the rate at which the central bank lends short-term funds to commercial banks. A cut in the repo rate typically makes borrowing cheaper for banks, which in turn can lower interest rates on loans to businesses and individuals, stimulating spending and investment. However, if inflation is already high, cutting rates can worsen price rises, forcing the MPC to balance growth concerns against price stability. Conversely, raising the repo rate makes borrowing costlier, which tends to cool down an overheated economy but can also slow job creation. The MPC operates under a flexible inflation-targeting framework, mandated to keep retail inflation within a specified band while supporting sustainable economic growth. Its decisions are closely watched by markets, as they influence everything from home loan EMIs to the value of the rupee.",
+        "question": "Which of the following statements is NOT supported by the passage?",
+        "options": [
+            "A) The MPC reviews the repo rate periodically",
+            "B) Repo rate decisions can affect home loan EMIs",
+            "C) The MPC follows a flexible inflation-targeting framework",
+            "D) The RBI has complete freedom to ignore inflation targets if growth is a priority",
+            "E) A rate cut can stimulate spending and investment"
+        ],
+        "correctOption": 3,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage says the MPC is 'mandated' to keep inflation within a specified band — this is the opposite of having 'complete freedom to ignore' targets, so D directly contradicts the text. A, B, C and E are all directly and explicitly stated in the passage.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q007",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Easy",
+        "passage": "The financial technology (Fintech) landscape in India has undergone a seismic shift in recent years, spearheaded by the adoption of Unified Payments Interface (UPI) and AI-driven credit assessment models. Central banks have increasingly emphasised consumer data privacy while encouraging open banking APIs that let third-party apps access account information with customer consent. Small merchants who once operated purely on cash have been drawn into the formal digital economy, generating transaction histories that traditional lenders can use to assess creditworthiness without collateral. Critics, however, warn that over-reliance on algorithmic credit scoring may replicate existing biases if the underlying data itself is skewed, and that rapid digitisation can leave less tech-literate populations behind unless deliberate financial-literacy efforts accompany the rollout.",
+        "question": "According to the passage, what is the primary catalyst behind India's recent fintech shift?",
+        "options": [
+            "A) Strict physical branch expansion rules by RBI",
+            "B) Rapid adoption of UPI and AI-driven credit assessment models",
+            "C) Total replacement of cash with international credit cards",
+            "D) Decline in smartphone user base across rural regions",
+            "E) Elimination of open banking API frameworks"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The very first sentence attributes the shift to UPI adoption and AI-driven credit assessment models — a direct restatement. Option C is wrong because the passage never mentions credit cards; it mentions UPI and digital credit histories instead, a common 'similar but unmentioned concept' distractor.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q008",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Moderate",
+        "passage": "The financial technology (Fintech) landscape in India has undergone a seismic shift in recent years, spearheaded by the adoption of Unified Payments Interface (UPI) and AI-driven credit assessment models. Central banks have increasingly emphasised consumer data privacy while encouraging open banking APIs that let third-party apps access account information with customer consent. Small merchants who once operated purely on cash have been drawn into the formal digital economy, generating transaction histories that traditional lenders can use to assess creditworthiness without collateral. Critics, however, warn that over-reliance on algorithmic credit scoring may replicate existing biases if the underlying data itself is skewed, and that rapid digitisation can leave less tech-literate populations behind unless deliberate financial-literacy efforts accompany the rollout.",
+        "question": "How have small merchants benefited according to the passage?",
+        "options": [
+            "A) They received free credit cards from the government",
+            "B) Their digital transaction histories now help lenders assess creditworthiness without collateral",
+            "C) They were forced to shut down cash operations entirely",
+            "D) They no longer need any form of banking relationship",
+            "E) They were excluded from the formal economy"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage says merchants generate transaction histories that lenders use to assess creditworthiness 'without collateral' — matching option B exactly in substance. Option E is the direct opposite of what the passage states (merchants were 'drawn into', not excluded from, the formal economy).",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q009",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Difficult",
+        "passage": "The financial technology (Fintech) landscape in India has undergone a seismic shift in recent years, spearheaded by the adoption of Unified Payments Interface (UPI) and AI-driven credit assessment models. Central banks have increasingly emphasised consumer data privacy while encouraging open banking APIs that let third-party apps access account information with customer consent. Small merchants who once operated purely on cash have been drawn into the formal digital economy, generating transaction histories that traditional lenders can use to assess creditworthiness without collateral. Critics, however, warn that over-reliance on algorithmic credit scoring may replicate existing biases if the underlying data itself is skewed, and that rapid digitisation can leave less tech-literate populations behind unless deliberate financial-literacy efforts accompany the rollout.",
+        "question": "What concern do critics raise, as per the passage, regarding algorithmic credit scoring?",
+        "options": [
+            "A) It is too slow compared to manual assessment",
+            "B) It may replicate existing biases if underlying data is skewed",
+            "C) It is banned by the Reserve Bank of India",
+            "D) It only works for large corporations",
+            "E) It eliminates the need for data privacy rules"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage directly states critics 'warn that over-reliance on algorithmic credit scoring may replicate existing biases if the underlying data itself is skewed.' None of the other options are mentioned as criticisms in the passage.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q010",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Moderate",
+        "passage": "The financial technology (Fintech) landscape in India has undergone a seismic shift in recent years, spearheaded by the adoption of Unified Payments Interface (UPI) and AI-driven credit assessment models. Central banks have increasingly emphasised consumer data privacy while encouraging open banking APIs that let third-party apps access account information with customer consent. Small merchants who once operated purely on cash have been drawn into the formal digital economy, generating transaction histories that traditional lenders can use to assess creditworthiness without collateral. Critics, however, warn that over-reliance on algorithmic credit scoring may replicate existing biases if the underlying data itself is skewed, and that rapid digitisation can leave less tech-literate populations behind unless deliberate financial-literacy efforts accompany the rollout.",
+        "question": "The word 'seismic' in the passage is used to convey:",
+        "options": [
+            "A) A minor, negligible change",
+            "B) A very large, transformative change",
+            "C) A change related only to earthquakes",
+            "D) A temporary and reversible change",
+            "E) A change that only affects banks, not merchants"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Seismic shift' is a common figurative expression meaning a dramatic, far-reaching change — the literal earthquake meaning (option C) is a distractor testing whether the reader recognises figurative usage.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q011",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Moderate",
+        "passage": "The financial technology (Fintech) landscape in India has undergone a seismic shift in recent years, spearheaded by the adoption of Unified Payments Interface (UPI) and AI-driven credit assessment models. Central banks have increasingly emphasised consumer data privacy while encouraging open banking APIs that let third-party apps access account information with customer consent. Small merchants who once operated purely on cash have been drawn into the formal digital economy, generating transaction histories that traditional lenders can use to assess creditworthiness without collateral. Critics, however, warn that over-reliance on algorithmic credit scoring may replicate existing biases if the underlying data itself is skewed, and that rapid digitisation can leave less tech-literate populations behind unless deliberate financial-literacy efforts accompany the rollout.",
+        "question": "What safeguard does the passage mention alongside open banking APIs?",
+        "options": [
+            "A) Complete removal of customer consent requirements",
+            "B) Emphasis on consumer data privacy",
+            "C) Mandatory use of foreign banking apps",
+            "D) A ban on third-party access to any account data",
+            "E) Removal of AI from credit assessment"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage states central banks emphasise 'consumer data privacy while encouraging open banking APIs' — privacy is the safeguard mentioned. Option D contradicts the passage, which says third-party apps CAN access data, just with customer consent.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q012",
+        "section": "English Language",
+        "topic": "Reading Comprehension",
+        "difficulty": "Difficult",
+        "passage": "The financial technology (Fintech) landscape in India has undergone a seismic shift in recent years, spearheaded by the adoption of Unified Payments Interface (UPI) and AI-driven credit assessment models. Central banks have increasingly emphasised consumer data privacy while encouraging open banking APIs that let third-party apps access account information with customer consent. Small merchants who once operated purely on cash have been drawn into the formal digital economy, generating transaction histories that traditional lenders can use to assess creditworthiness without collateral. Critics, however, warn that over-reliance on algorithmic credit scoring may replicate existing biases if the underlying data itself is skewed, and that rapid digitisation can leave less tech-literate populations behind unless deliberate financial-literacy efforts accompany the rollout.",
+        "question": "What risk of rapid digitisation is highlighted in the passage?",
+        "options": [
+            "A) It may leave less tech-literate populations behind without financial-literacy efforts",
+            "B) It will completely stop UPI transactions",
+            "C) It guarantees equal benefit to every citizen automatically",
+            "D) It has no risks according to the passage",
+            "E) It only benefits urban tech companies"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage's closing line explicitly warns that rapid digitisation 'can leave less tech-literate populations behind unless deliberate financial-literacy efforts accompany the rollout' — a direct match to option A.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q013",
+        "section": "English Language",
+        "topic": "Cloze Test",
+        "difficulty": "Moderate",
+        "passage": "India's banking sector has (1)___ significant transformation over the past decade, driven largely by digital adoption and regulatory reform. Public sector banks, once (2)___ for slow service, have modernised their processes to (3)___ pace with private lenders. Financial inclusion schemes have brought millions of unbanked citizens (4)___ the formal banking net, while stricter norms around non-performing assets have (5)___ banks to clean up their balance sheets.",
+        "question": "Select the most appropriate word to fill blank (1) in the passage.",
+        "options": [
+            "A) undergone",
+            "B) undergoing",
+            "C) undergo",
+            "D) undergoes",
+            "E) had undergone"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Has undergone' is the correct present-perfect form agreeing with the singular subject 'sector' and matching the timeframe 'over the past decade'. Option B is a distractor form (gerund) that doesn't fit after 'has'.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q014",
+        "section": "English Language",
+        "topic": "Cloze Test",
+        "difficulty": "Moderate",
+        "passage": "India's banking sector has (1)___ significant transformation over the past decade, driven largely by digital adoption and regulatory reform. Public sector banks, once (2)___ for slow service, have modernised their processes to (3)___ pace with private lenders. Financial inclusion schemes have brought millions of unbanked citizens (4)___ the formal banking net, while stricter norms around non-performing assets have (5)___ banks to clean up their balance sheets.",
+        "question": "Select the most appropriate word to fill blank (2) in the passage.",
+        "options": [
+            "A) praised",
+            "B) criticised",
+            "C) rewarded",
+            "D) promoted",
+            "E) ignored"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The sentence contrasts a past reputation with present modernisation ('once ___ for slow service... have modernised'), so a negative term fits — 'criticised' matches the contrast logically, unlike 'praised' or 'rewarded' which would make the sentence self-contradictory.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q015",
+        "section": "English Language",
+        "topic": "Cloze Test",
+        "difficulty": "Moderate",
+        "passage": "India's banking sector has (1)___ significant transformation over the past decade, driven largely by digital adoption and regulatory reform. Public sector banks, once (2)___ for slow service, have modernised their processes to (3)___ pace with private lenders. Financial inclusion schemes have brought millions of unbanked citizens (4)___ the formal banking net, while stricter norms around non-performing assets have (5)___ banks to clean up their balance sheets.",
+        "question": "Select the most appropriate word to fill blank (3) in the passage.",
+        "options": [
+            "A) keep",
+            "B) kept",
+            "C) keeping",
+            "D) keeps",
+            "E) had kept"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'To keep pace with' is the correct fixed collocation following the infinitive marker 'to'. 'Kept' or 'keeping' cannot follow 'to' in this construction.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q016",
+        "section": "English Language",
+        "topic": "Cloze Test",
+        "difficulty": "Moderate",
+        "passage": "India's banking sector has (1)___ significant transformation over the past decade, driven largely by digital adoption and regulatory reform. Public sector banks, once (2)___ for slow service, have modernised their processes to (3)___ pace with private lenders. Financial inclusion schemes have brought millions of unbanked citizens (4)___ the formal banking net, while stricter norms around non-performing assets have (5)___ banks to clean up their balance sheets.",
+        "question": "Select the most appropriate word to fill blank (4) in the passage.",
+        "options": [
+            "A) into",
+            "B) onto",
+            "C) with",
+            "D) under",
+            "E) at"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Brought ... into the formal banking net' is the idiomatic and logically correct preposition — you bring something 'into' a net/system. 'Onto' would suggest a surface, which doesn't fit the metaphor of a 'net'.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q017",
+        "section": "English Language",
+        "topic": "Cloze Test",
+        "difficulty": "Moderate",
+        "passage": "India's banking sector has (1)___ significant transformation over the past decade, driven largely by digital adoption and regulatory reform. Public sector banks, once (2)___ for slow service, have modernised their processes to (3)___ pace with private lenders. Financial inclusion schemes have brought millions of unbanked citizens (4)___ the formal banking net, while stricter norms around non-performing assets have (5)___ banks to clean up their balance sheets.",
+        "question": "Select the most appropriate word to fill blank (5) in the passage.",
+        "options": [
+            "A) force",
+            "B) forcing",
+            "C) forced",
+            "D) forces",
+            "E) has forced"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The blank follows 'have ___ banks to clean up', so the past participle 'forced' is needed to complete the present-perfect construction 'have forced'. Option E duplicates the auxiliary 'have', which is already present earlier in the sentence, making it grammatically redundant.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q018",
+        "section": "English Language",
+        "topic": "Para Jumble",
+        "difficulty": "Moderate",
+        "passage": "(A) which had been dormant for nearly three decades. (B) The volcano erupted without warning early on Tuesday morning, (C) forcing the evacuation of nearby villages. (D) Scientists had detected only minor tremors in the days prior.",
+        "question": "Which of the following gives the most logical sequence of the sentences to form a coherent paragraph?",
+        "options": [
+            "A) B-A-C-D",
+            "B) D-B-A-C",
+            "C) B-A-D-C",
+            "D) D-A-B-C",
+            "E) B-C-A-D"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "B introduces the event ('The volcano erupted...'), A immediately qualifies it ('which had been dormant...'), C states the consequence ('forcing the evacuation...'), and D adds a closing detail about prior warning signs. B-A-C-D reads as a single coherent flow of cause, description, and effect.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q019",
+        "section": "English Language",
+        "topic": "Para Jumble",
+        "difficulty": "Moderate",
+        "passage": "(A) is expected to boost rural incomes significantly. (B) The government's new agricultural credit scheme, (C) launched in partnership with regional rural banks, (D) aims to reduce farmers' dependence on informal moneylenders.",
+        "question": "Which of the following gives the most logical sequence of the sentences to form a coherent paragraph?",
+        "options": [
+            "A) B-C-D-A",
+            "B) B-D-C-A",
+            "C) C-B-D-A",
+            "D) B-C-A-D",
+            "E) D-B-C-A"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "B names the subject ('The government's new agricultural credit scheme'), C adds a descriptive clause about it ('launched in partnership...'), D states its aim, and A adds the expected outcome. B-C-D-A keeps the subject-modifier-purpose-result order intact.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q020",
+        "section": "English Language",
+        "topic": "Para Jumble",
+        "difficulty": "Moderate",
+        "passage": "(A) but experts caution that consumer demand remains fragile. (B) Industrial output rose by 4.2 percent last quarter, (C) marking the fastest pace of growth in two years, (D) particularly in rural markets still recovering from last year's poor monsoon.",
+        "question": "Which of the following gives the most logical sequence of the sentences to form a coherent paragraph?",
+        "options": [
+            "A) B-C-A-D",
+            "B) B-A-C-D",
+            "C) C-B-A-D",
+            "D) B-C-D-A",
+            "E) B-D-C-A"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "B gives the main fact ('Industrial output rose...'), C qualifies it ('marking the fastest pace...'), A introduces the contrasting caution ('but experts caution...'), and D elaborates where that fragility lies. B-C-A-D creates a logical fact-then-caveat structure.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q021",
+        "section": "English Language",
+        "topic": "Para Jumble",
+        "difficulty": "Moderate",
+        "passage": "(A) Many candidates struggle with time management (B) rather than a lack of conceptual knowledge, (C) in competitive banking examinations, (D) which is why structured mock tests are so valuable.",
+        "question": "Which of the following gives the most logical sequence of the sentences to form a coherent paragraph?",
+        "options": [
+            "A) A-C-B-D",
+            "B) A-B-C-D",
+            "C) C-A-B-D",
+            "D) A-D-C-B",
+            "E) C-B-A-D"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "A states the core claim, C locates it in context ('in competitive banking examinations'), B contrasts it with the alternate cause, and D concludes with the implication. A-C-B-D reads naturally: claim → context → contrast → conclusion.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q022",
+        "section": "English Language",
+        "topic": "Para Jumble",
+        "difficulty": "Moderate",
+        "passage": "(A) has made it one of the most closely tracked indices globally. (B) Despite periodic corrections, (C) the Sensex has delivered strong long-term returns, (D) and its resilience through multiple economic cycles.",
+        "question": "Which of the following gives the most logical sequence of the sentences to form a coherent paragraph?",
+        "options": [
+            "A) B-C-D-A",
+            "B) C-B-D-A",
+            "C) B-D-C-A",
+            "D) C-D-B-A",
+            "E) B-C-A-D"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "B sets up the concessive clause ('Despite periodic corrections'), C states the main claim, D adds a second supporting point joined by 'and', and A gives the resulting conclusion. B-C-D-A links the concession, claim, extra evidence, and conclusion in the right logical order.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q023",
+        "section": "English Language",
+        "topic": "Error Spotting",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Identify the part of the sentence that contains a grammatical error (if any): 'Neither the Branch Manager (A) / nor the senior clerks (B) / was present at the conference (C) / regarding NPA resolution (D) / No Error (E)'",
+        "options": [
+            "A) Neither the Branch Manager",
+            "B) nor the senior clerks",
+            "C) was present at the conference",
+            "D) regarding NPA resolution",
+            "E) No Error"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "In an 'Neither...nor' construction, the verb agrees with the subject closer to it — here that's 'the senior clerks' (plural), so the verb must be 'were', not 'was'. Part C therefore contains the grammatical error.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q024",
+        "section": "English Language",
+        "topic": "Error Spotting",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Identify the part of the sentence that contains a grammatical error (if any): 'The committee have decided (A) / to postpone the meeting (B) / until further notice (C) / is given by the chairman (D) / No Error (E)'",
+        "options": [
+            "A) The committee have decided",
+            "B) to postpone the meeting",
+            "C) until further notice",
+            "D) is given by the chairman",
+            "E) No Error"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Committee' is a collective noun treated as singular in standard usage when acting as one unit, so it should take 'has decided', not 'have decided'. Part A contains the error.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q025",
+        "section": "English Language",
+        "topic": "Error Spotting",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Identify the part of the sentence that contains a grammatical error (if any): 'Each of the employees (A) / are required to submit (B) / their annual performance review (C) / by the end of the month (D) / No Error (E)'",
+        "options": [
+            "A) Each of the employees",
+            "B) are required to submit",
+            "C) their annual performance review",
+            "D) by the end of the month",
+            "E) No Error"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Each' is a singular pronoun, so despite the plural-looking 'of the employees', the verb must agree with 'each' and be singular: 'is required', not 'are required'. Part B contains the error.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q026",
+        "section": "English Language",
+        "topic": "Error Spotting",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Identify the part of the sentence that contains a grammatical error (if any): 'Having completed the audit (A) / the report were submitted (B) / to the regional office (C) / for further review (D) / No Error (E)'",
+        "options": [
+            "A) Having completed the audit",
+            "B) the report were submitted",
+            "C) to the regional office",
+            "D) for further review",
+            "E) No Error"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'The report' is singular, so it takes the singular passive verb 'was submitted', not 'were submitted'. Part B contains the subject-verb agreement error.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q027",
+        "section": "English Language",
+        "topic": "Sentence Improvement",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Improve the bracketed/underlined part of the sentence, if required: \"The bank has recently launch a new mobile application for its customers.\"",
+        "options": [
+            "A) has recently launch",
+            "B) has recently launched",
+            "C) have recently launched",
+            "D) had recently launch",
+            "E) No improvement needed"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The present-perfect tense requires the past participle 'launched' after 'has', not the base form 'launch'. 'Has recently launched' is grammatically correct and matches the singular subject 'bank'.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q028",
+        "section": "English Language",
+        "topic": "Sentence Improvement",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Improve the bracketed/underlined part of the sentence, if required: \"Despite of the heavy rainfall, the branch remained open for customer transactions.\"",
+        "options": [
+            "A) Despite of",
+            "B) In spite",
+            "C) Despite",
+            "D) Regardless of the fact",
+            "E) No improvement needed"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Despite' is never followed by 'of' — it directly precedes a noun phrase ('Despite the heavy rainfall'). 'In spite of' is correct, but 'Despite of' is not; since only 'Despite' (without 'of') is offered as option C, that's the required correction.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q029",
+        "section": "English Language",
+        "topic": "Sentence Improvement",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Improve the bracketed/underlined part of the sentence, if required: \"The customer was asking to the manager about the delay in loan disbursement.\"",
+        "options": [
+            "A) was asking to",
+            "B) was asking with",
+            "C) had been asked to",
+            "D) was asking",
+            "E) No improvement needed"
+        ],
+        "correctOption": 3,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Ask' takes a direct object without a preposition when addressing a person directly ('asking the manager'), so the correct phrasing drops 'to' entirely: 'was asking the manager'. Option D removes the incorrect preposition.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q030",
+        "section": "English Language",
+        "topic": "Sentence Improvement",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Improve the bracketed/underlined part of the sentence, if required: \"The new policy will effect all existing account holders from next month.\"",
+        "options": [
+            "A) will effect",
+            "B) will affect",
+            "C) will be effect",
+            "D) will affecting",
+            "E) No improvement needed"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'Affect' (verb, meaning to influence) is needed here, not 'effect' (usually a noun meaning result). 'Will affect all existing account holders' is the correct usage — a classic affect/effect confusion tested in banking exams.",
+        "basedOn": "SBI PO Prelims pattern (English Language)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q031",
+        "section": "Quantitative Aptitude",
+        "topic": "Simplification & Approximation",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Find the approximate value of (?) in: 439.98 ÷ 11.02 + 15.99 × 4.05 - 19.98 = ?",
+        "options": [
+            "A) 84",
+            "B) 104",
+            "C) 72",
+            "D) 96",
+            "E) 112"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Approximate each term: 440÷11=40; 16×4=64; so 40+64-20=84, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q032",
+        "section": "Quantitative Aptitude",
+        "topic": "Simplification & Approximation",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Find the approximate value of (?) in: 15% of 650 + 25% of 320 = ?",
+        "options": [
+            "A) 178",
+            "B) 158",
+            "C) 198",
+            "D) 168",
+            "E) 148"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "15% of 650 = 97.5; 25% of 320 = 80. Sum = 97.5+80 = 177.5, closest to option A (178).",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q033",
+        "section": "Quantitative Aptitude",
+        "topic": "Simplification & Approximation",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Find the approximate value of (?) in: √1681 + √2116 − √729 = ?",
+        "options": [
+            "A) 50",
+            "B) 60",
+            "C) 55",
+            "D) 65",
+            "E) 45"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "√1681 = 41 (since 41²=1681), √2116 = 46 (since 46²=2116), √729 = 27 (since 27²=729). So 41 + 46 − 27 = 60, matching option B exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q034",
+        "section": "Quantitative Aptitude",
+        "topic": "Simplification & Approximation",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Find the approximate value of (?) in: 12.5 × 8 + 144 ÷ 12 − 6² = ?",
+        "options": [
+            "A) 66",
+            "B) 86",
+            "C) 76",
+            "D) 56",
+            "E) 96"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "12.5 × 8 = 100; 144 ÷ 12 = 12; 6² = 36. So 100 + 12 − 36 = 76, matching option C exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q035",
+        "section": "Quantitative Aptitude",
+        "topic": "Simplification & Approximation",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Find the approximate value of (?) in: (28% of 450) + (35% of 380) = ?",
+        "options": [
+            "A) 259",
+            "B) 269",
+            "C) 249",
+            "D) 279",
+            "E) 239"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "28% of 450 = 126; 35% of 380 = 133. Sum = 126 + 133 = 259, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q036",
+        "section": "Quantitative Aptitude",
+        "topic": "Simplification & Approximation",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Find the approximate value of (?) in: 18 × 6 − 15² ÷ 5 + 40 = ?",
+        "options": [
+            "A) 113",
+            "B) 103",
+            "C) 123",
+            "D) 93",
+            "E) 133"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "18 × 6 = 108; 15² = 225, and 225 ÷ 5 = 45. So 108 − 45 + 40 = 103, matching option B exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q037",
+        "section": "Quantitative Aptitude",
+        "topic": "Simplification & Approximation",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Find the approximate value of (?) in: 3/7 of 1400 + 2/5 of 750 = ?",
+        "options": [
+            "A) 900",
+            "B) 800",
+            "C) 700",
+            "D) 950",
+            "E) 850"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "3/7 of 1400 = 600; 2/5 of 750 = 300. Sum = 600 + 300 = 900, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q038",
+        "section": "Quantitative Aptitude",
+        "topic": "Number Series",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Find the next/missing number in the series: 7, 9, 14, 24, 41, ?",
+        "options": [
+            "A) 65",
+            "B) 67",
+            "C) 63",
+            "D) 69",
+            "E) 71"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The differences between consecutive terms are 2, 5, 10, 17 — these differences themselves rise by 3, 5, 7 (successive odd numbers). The next difference is 17+9=26, so 41+26=67, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q039",
+        "section": "Quantitative Aptitude",
+        "topic": "Number Series",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Find the next/missing number in the series: 4, 6, 12, 30, 90, ?",
+        "options": [
+            "A) 315",
+            "B) 270",
+            "C) 300",
+            "D) 320",
+            "E) 288"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Each term is obtained by multiplying the previous term by a factor that rises by 0.5 each time: ×1.5, ×2, ×2.5, ×3, ×3.5. So 90 × 3.5 = 315, matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q040",
+        "section": "Quantitative Aptitude",
+        "topic": "Number Series",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Find the next/missing number in the series: 2, 5, 11, 23, 47, ?",
+        "options": [
+            "A) 92",
+            "B) 95",
+            "C) 96",
+            "D) 94",
+            "E) 90"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Each term follows the pattern: (previous term × 2) + 1. So 47×2+1 = 95, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q041",
+        "section": "Quantitative Aptitude",
+        "topic": "Number Series",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Find the next/missing number in the series: 100, 91, 83, 76, 70, ?",
+        "options": [
+            "A) 64",
+            "B) 66",
+            "C) 65",
+            "D) 63",
+            "E) 67"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The differences between consecutive terms are −9, −8, −7, −6 (decreasing in magnitude by 1 each time), so the next difference is −5: 70−5=65, matching option C.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q042",
+        "section": "Quantitative Aptitude",
+        "topic": "Number Series",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Find the next/missing number in the series: 5, 10, 20, 35, 55, ?",
+        "options": [
+            "A) 75",
+            "B) 80",
+            "C) 78",
+            "D) 82",
+            "E) 72"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The differences between consecutive terms are 5, 10, 15, 20 (multiples of 5 increasing by 5 each time), so the next difference is 25: 55+25=80, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q043",
+        "section": "Quantitative Aptitude",
+        "topic": "Quadratic Equations",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "In the following question, two equations are given. Solve both and establish the relation between x and y:\nI. x² − 9x + 20 = 0   II. y² − 11y + 30 = 0",
+        "options": [
+            "A) x > y",
+            "B) x < y",
+            "C) x ≥ y",
+            "D) x ≤ y",
+            "E) x = y or no relation can be established"
+        ],
+        "correctOption": 4,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Equation I factors to (x−4)(x−5)=0, giving x = 4 or 5. Equation II factors to (y−5)(y−6)=0, giving y = 5 or 6. Since x can equal y (when x=5, y=5) or be smaller than y in other pairings, no single consistent inequality holds across every root combination, so option E is correct.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q044",
+        "section": "Quantitative Aptitude",
+        "topic": "Quadratic Equations",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "In the following question, two equations are given. Solve both and establish the relation between x and y:\nI. 2x² − 11x + 12 = 0   II. 2y² − 13y + 20 = 0",
+        "options": [
+            "A) x > y",
+            "B) x < y",
+            "C) x ≥ y",
+            "D) x ≤ y",
+            "E) x = y or no relation can be established"
+        ],
+        "correctOption": 3,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Equation I factors to (2x−3)(x−4)=0, giving x = 1.5 or 4. Equation II factors to (2y−5)(y−4)=0, giving y = 2.5 or 4. Every value of x is less than or equal to every value of y across all pairings (1.5≤2.5, 1.5≤4, 4≤4), so x ≤ y holds consistently, matching option D.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q045",
+        "section": "Quantitative Aptitude",
+        "topic": "Quadratic Equations",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "In the following question, two equations are given. Solve both and establish the relation between x and y:\nI. x² = 196   II. y² − 3y − 28 = 0",
+        "options": [
+            "A) x > y",
+            "B) x < y",
+            "C) x ≥ y",
+            "D) x ≤ y",
+            "E) x = y or no relation can be established"
+        ],
+        "correctOption": 4,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Equation I gives x = ±14. Equation II factors to (y−7)(y+4)=0, giving y = 7 or −4. Checking all combinations (14 vs 7, 14 vs −4, −14 vs 7, −14 vs −4) produces both x>y and x<y outcomes depending on which roots are paired, so no definite relation can be established — option E.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q046",
+        "section": "Quantitative Aptitude",
+        "topic": "Quadratic Equations",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "In the following question, two equations are given. Solve both and establish the relation between x and y:\nI. x² − 5x + 6 = 0   II. y² − 7y + 12 = 0",
+        "options": [
+            "A) x > y",
+            "B) x < y",
+            "C) x ≥ y",
+            "D) x ≤ y",
+            "E) x = y or no relation can be established"
+        ],
+        "correctOption": 3,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Equation I factors to (x−2)(x−3)=0, giving x = 2 or 3. Equation II factors to (y−3)(y−4)=0, giving y = 3 or 4. In every pairing x is always less than or equal to y (2≤3, 2≤4, 3≤3, 3≤4), so x ≤ y holds consistently, matching option D.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q047",
+        "section": "Quantitative Aptitude",
+        "topic": "Quadratic Equations",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "In the following question, two equations are given. Solve both and establish the relation between x and y:\nI. x² − 6x + 8 = 0   II. y² − 9y + 20 = 0",
+        "options": [
+            "A) x > y",
+            "B) x < y",
+            "C) x ≥ y",
+            "D) x ≤ y",
+            "E) x = y or no relation can be established"
+        ],
+        "correctOption": 3,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Equation I factors to (x−2)(x−4)=0, giving x = 2 or 4. Equation II factors to (y−4)(y−5)=0, giving y = 4 or 5. In every pairing x is always less than or equal to y (2≤4, 2≤5, 4≤4, 4≤5), so x ≤ y holds consistently, matching option D.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q048",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Bar Graph)",
+        "difficulty": "Moderate",
+        "passage": "The bar graph shows the number of loan applications (in hundreds) received by a bank across five branches (P, Q, R, S, T) in a given month:\nP = 45, Q = 62, R = 38, T = 55, S = 70 (all figures in hundreds).",
+        "question": "What is the total number of loan applications received by all five branches (in hundreds)?",
+        "options": [
+            "A) 270",
+            "B) 260",
+            "C) 280",
+            "D) 250",
+            "E) 290"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Sum = 45+62+38+55+70 = 270 (in hundreds), matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q049",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Bar Graph)",
+        "difficulty": "Moderate",
+        "passage": "The bar graph shows the number of loan applications (in hundreds) received by a bank across five branches (P, Q, R, S, T) in a given month:\nP = 45, Q = 62, R = 38, T = 55, S = 70 (all figures in hundreds).",
+        "question": "What is the average number of applications received per branch (in hundreds)?",
+        "options": [
+            "A) 50",
+            "B) 52",
+            "C) 54",
+            "D) 56",
+            "E) 58"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Total = 270 (hundreds); Average = 270 ÷ 5 = 54 (hundreds), matching option C exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q050",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Bar Graph)",
+        "difficulty": "Moderate",
+        "passage": "The bar graph shows the number of loan applications (in hundreds) received by a bank across five branches (P, Q, R, S, T) in a given month:\nP = 45, Q = 62, R = 38, T = 55, S = 70 (all figures in hundreds).",
+        "question": "Branch S received approximately what percentage more applications than Branch R?",
+        "options": [
+            "A) 84.2%",
+            "B) 88.2%",
+            "C) 80%",
+            "D) 76%",
+            "E) 90%"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Difference = 70−38 = 32. Percentage more = (32/38)×100 ≈ 84.2%, matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q051",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Bar Graph)",
+        "difficulty": "Moderate",
+        "passage": "The bar graph shows the number of loan applications (in hundreds) received by a bank across five branches (P, Q, R, S, T) in a given month:\nP = 45, Q = 62, R = 38, T = 55, S = 70 (all figures in hundreds).",
+        "question": "What is the ratio of applications received by Branch Q to Branch T?",
+        "options": [
+            "A) 62:55",
+            "B) 55:62",
+            "C) 31:28",
+            "D) 28:31",
+            "E) None of these"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Q:T = 62:55. This ratio is already in its lowest form since the greatest common divisor of 62 and 55 is 1, so it cannot be simplified further — the ratio remains 62:55, matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q052",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Bar Graph)",
+        "difficulty": "Moderate",
+        "passage": "The bar graph shows the number of loan applications (in hundreds) received by a bank across five branches (P, Q, R, S, T) in a given month:\nP = 45, Q = 62, R = 38, T = 55, S = 70 (all figures in hundreds).",
+        "question": "If Branch P's applications increase by 20% next month, how many applications (in hundreds) will it receive?",
+        "options": [
+            "A) 54",
+            "B) 50",
+            "C) 52",
+            "D) 56",
+            "E) 58"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "20% of 45 = 9. New total = 45 + 9 = 54 (hundreds), matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q053",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Table)",
+        "difficulty": "Moderate",
+        "passage": "The table shows the number of employees (in thousands) in five sectors of a bank's operations and the percentage of women employees in each:\nRetail Banking: 40 total, 45% women\nCorporate Banking: 25 total, 30% women\nIT & Digital: 20 total, 55% women\nOperations: 30 total, 40% women\nHR & Admin: 15 total, 60% women",
+        "question": "How many women employees work in Retail Banking (in thousands)?",
+        "options": [
+            "A) 18",
+            "B) 16",
+            "C) 20",
+            "D) 14",
+            "E) 22"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "45% of 40 = 18 (thousand), matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q054",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Table)",
+        "difficulty": "Moderate",
+        "passage": "The table shows the number of employees (in thousands) in five sectors of a bank's operations and the percentage of women employees in each:\nRetail Banking: 40 total, 45% women\nCorporate Banking: 25 total, 30% women\nIT & Digital: 20 total, 55% women\nOperations: 30 total, 40% women\nHR & Admin: 15 total, 60% women",
+        "question": "What is the total number of employees across all five sectors (in thousands)?",
+        "options": [
+            "A) 130",
+            "B) 120",
+            "C) 140",
+            "D) 125",
+            "E) 135"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Sum = 40+25+20+30+15 = 130 (thousand), matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q055",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Table)",
+        "difficulty": "Moderate",
+        "passage": "The table shows the number of employees (in thousands) in five sectors of a bank's operations and the percentage of women employees in each:\nRetail Banking: 40 total, 45% women\nCorporate Banking: 25 total, 30% women\nIT & Digital: 20 total, 55% women\nOperations: 30 total, 40% women\nHR & Admin: 15 total, 60% women",
+        "question": "How many women employees work in IT & Digital and HR & Admin combined (in thousands)?",
+        "options": [
+            "A) 20",
+            "B) 18",
+            "C) 22",
+            "D) 19",
+            "E) 21"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "IT & Digital women = 55% of 20 = 11 (thousand); HR & Admin women = 60% of 15 = 9 (thousand). Combined = 11+9 = 20, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q056",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Table)",
+        "difficulty": "Moderate",
+        "passage": "The table shows the number of employees (in thousands) in five sectors of a bank's operations and the percentage of women employees in each:\nRetail Banking: 40 total, 45% women\nCorporate Banking: 25 total, 30% women\nIT & Digital: 20 total, 55% women\nOperations: 30 total, 40% women\nHR & Admin: 15 total, 60% women",
+        "question": "What percentage of total employees (across all sectors) work in Corporate Banking?",
+        "options": [
+            "A) 19.2%",
+            "B) 20%",
+            "C) 18%",
+            "D) 22%",
+            "E) 25%"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Corporate Banking = 25 (thousand) out of a grand total of 130 (thousand). Percentage = (25/130)×100 ≈ 19.2%, matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q057",
+        "section": "Quantitative Aptitude",
+        "topic": "Data Interpretation (Table)",
+        "difficulty": "Moderate",
+        "passage": "The table shows the number of employees (in thousands) in five sectors of a bank's operations and the percentage of women employees in each:\nRetail Banking: 40 total, 45% women\nCorporate Banking: 25 total, 30% women\nIT & Digital: 20 total, 55% women\nOperations: 30 total, 40% women\nHR & Admin: 15 total, 60% women",
+        "question": "How many total women employees are there across all five sectors combined (in thousands)?",
+        "options": [
+            "A) 57.5",
+            "B) 55.5",
+            "C) 52.5",
+            "D) 60.5",
+            "E) 50.5"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Retail: 45% of 40=18; Corporate: 30% of 25=7.5; IT: 55% of 20=11; Operations: 40% of 30=12; HR: 60% of 15=9. Total = 18+7.5+11+12+9 = 57.5 (thousand), matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q058",
+        "section": "Quantitative Aptitude",
+        "topic": "Arithmetic Word Problems",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "A shopkeeper marks an article 40% above cost price and gives a discount of 15% on the marked price. What is his overall profit percentage?",
+        "options": [
+            "A) 19%",
+            "B) 20%",
+            "C) 21%",
+            "D) 18%",
+            "E) 22%"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Let CP = 100. Marked price = 140. Selling price after a 15% discount = 140 × 0.85 = 119. Profit = 119 − 100 = 19, so profit percentage = 19%, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q059",
+        "section": "Quantitative Aptitude",
+        "topic": "Arithmetic Word Problems",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Two pipes A and B can fill a tank in 12 minutes and 18 minutes respectively. If both pipes are opened together, how long will they take to fill the tank?",
+        "options": [
+            "A) 7.2 minutes",
+            "B) 7 minutes",
+            "C) 8 minutes",
+            "D) 6.5 minutes",
+            "E) 7.5 minutes"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "LCM of 12 and 18 = 36 units (total work). Efficiency of A = 36/12 = 3 units/min; B = 36/18 = 2 units/min. Combined = 5 units/min. Time = 36/5 = 7.2 minutes, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q060",
+        "section": "Quantitative Aptitude",
+        "topic": "Arithmetic Word Problems",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "The simple interest on a sum of ₹8,000 for 3 years at a certain rate is ₹1,920. What is the rate of interest per annum?",
+        "options": [
+            "A) 6%",
+            "B) 7%",
+            "C) 8%",
+            "D) 9%",
+            "E) 10%"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "SI = (P×R×T)/100, so 1920 = (8000×R×3)/100 → 1920 = 240R → R = 8%, matching option C exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q061",
+        "section": "Quantitative Aptitude",
+        "topic": "Arithmetic Word Problems",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "The ratio of ages of A and B is 3:5. After 6 years, the ratio becomes 2:3. What is A's current age?",
+        "options": [
+            "A) 18",
+            "B) 12",
+            "C) 15",
+            "D) 21",
+            "E) 24"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Let ages be 3x and 5x. After 6 years: (3x+6)/(5x+6) = 2/3 → 9x+18 = 10x+12 → x=6. A's age = 3×6 = 18, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q062",
+        "section": "Quantitative Aptitude",
+        "topic": "Arithmetic Word Problems",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "A sum of money doubles itself in 8 years at simple interest. In how many years will it become 4 times itself?",
+        "options": [
+            "A) 16 years",
+            "B) 20 years",
+            "C) 24 years",
+            "D) 32 years",
+            "E) 12 years"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "If a sum doubles in 8 years at SI, the interest earned equals the principal in 8 years, so the rate = 100/8 = 12.5% per annum. To become 4 times the sum (interest = 3 times principal), time = 3×8 = 24 years, matching option C exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q063",
+        "section": "Quantitative Aptitude",
+        "topic": "Arithmetic Word Problems",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "The average weight of 8 persons increases by 2.5 kg when a new person replaces one weighing 60 kg. What is the weight of the new person?",
+        "options": [
+            "A) 78 kg",
+            "B) 80 kg",
+            "C) 82 kg",
+            "D) 75 kg",
+            "E) 84 kg"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Total weight increase = 8 × 2.5 = 20 kg. New person's weight = 60 + 20 = 80 kg, matching option B exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q064",
+        "section": "Quantitative Aptitude",
+        "topic": "Arithmetic Word Problems",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "A and B invest ₹36,000 and ₹48,000 respectively in a business. If the total profit at the end of the year is ₹21,000, what is A's share?",
+        "options": [
+            "A) ₹9,000",
+            "B) ₹10,000",
+            "C) ₹8,000",
+            "D) ₹12,000",
+            "E) ₹9,500"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Ratio of investment A:B = 36000:48000 = 3:4. A's share = (3/7) × 21000 = ₹9,000, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q065",
+        "section": "Quantitative Aptitude",
+        "topic": "Arithmetic Word Problems",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "A train 240 metres long crosses a platform 360 metres long in 30 seconds. What is the speed of the train in km/h?",
+        "options": [
+            "A) 72 km/h",
+            "B) 60 km/h",
+            "C) 68 km/h",
+            "D) 65 km/h",
+            "E) 75 km/h"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Total distance covered = 240+360 = 600 m in 30 s, giving a speed of 20 m/s. Converting to km/h: 20 × 18/5 = 72 km/h, matching option A exactly.",
+        "basedOn": "SBI PO Prelims pattern (Quantitative Aptitude)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q066",
+        "section": "Reasoning Ability",
+        "topic": "Circular Seating Arrangement",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — A, B, C, D, E, F, G and H — sit around a circular table, all facing the centre. A sits third to the left of B. Only two persons sit between B and C. G sits immediate right of C. D sits second to the right of A, and F sits between A and D. H sits immediate left of C. E is not an immediate neighbour of A.",
+        "question": "Who sits third to the right of G?",
+        "options": [
+            "A) D",
+            "B) E",
+            "C) F",
+            "D) A",
+            "E) H"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Working clockwise from the given clues, the seating order comes out to: A, D, F, B, H, C, G, E. Starting at G and moving three seats to the right (clockwise) lands on D, matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q067",
+        "section": "Reasoning Ability",
+        "topic": "Circular Seating Arrangement",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — A, B, C, D, E, F, G and H — sit around a circular table, all facing the centre. A sits third to the left of B. Only two persons sit between B and C. G sits immediate right of C. D sits second to the right of A, and F sits between A and D. H sits immediate left of C. E is not an immediate neighbour of A.",
+        "question": "Who are the immediate neighbours of H?",
+        "options": [
+            "A) A and F",
+            "B) B and C",
+            "C) D and G",
+            "D) F and G",
+            "E) A and E"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "In the derived arrangement A-D-F-B-H-C-G-E (clockwise), H sits between B and C, so B and C are H's immediate neighbours, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q068",
+        "section": "Reasoning Ability",
+        "topic": "Circular Seating Arrangement",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — A, B, C, D, E, F, G and H — sit around a circular table, all facing the centre. A sits third to the left of B. Only two persons sit between B and C. G sits immediate right of C. D sits second to the right of A, and F sits between A and D. H sits immediate left of C. E is not an immediate neighbour of A.",
+        "question": "Who sits exactly opposite A at the table?",
+        "options": [
+            "A) H",
+            "B) C",
+            "C) G",
+            "D) B",
+            "E) F"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "With eight people seated around a circular table, the person directly opposite is four seats away. Counting four seats clockwise from A in the order A-D-F-B-H-C-G-E lands on H, matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q069",
+        "section": "Reasoning Ability",
+        "topic": "Circular Seating Arrangement",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — A, B, C, D, E, F, G and H — sit around a circular table, all facing the centre. A sits third to the left of B. Only two persons sit between B and C. G sits immediate right of C. D sits second to the right of A, and F sits between A and D. H sits immediate left of C. E is not an immediate neighbour of A.",
+        "question": "Who sits second to the left of D?",
+        "options": [
+            "A) G",
+            "B) C",
+            "C) E",
+            "D) H",
+            "E) B"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "In the arrangement A-D-F-B-H-C-G-E (clockwise), moving two seats to the left (counter-clockwise) from D lands on E, matching option C.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q070",
+        "section": "Reasoning Ability",
+        "topic": "Circular Seating Arrangement",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — A, B, C, D, E, F, G and H — sit around a circular table, all facing the centre. A sits third to the left of B. Only two persons sit between B and C. G sits immediate right of C. D sits second to the right of A, and F sits between A and D. H sits immediate left of C. E is not an immediate neighbour of A.",
+        "question": "How many persons sit between F and E when counted clockwise starting from F?",
+        "options": [
+            "A) 3",
+            "B) 4",
+            "C) 5",
+            "D) 2",
+            "E) 6"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "In the clockwise order A-D-F-B-H-C-G-E, counting clockwise from F to E passes through B, H, C, G — that is 4 persons in between, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q071",
+        "section": "Reasoning Ability",
+        "topic": "Linear Seating Arrangement",
+        "difficulty": "Moderate",
+        "passage": "Eight persons — I, J, K, L, M, N, O and P — sit in a straight row facing north. M sits at the extreme left end of the row. Only two persons sit between M and K. P sits third from the left end. N sits immediate right of K. L sits immediate right of N. Only one person sits between L and O. J sits second from the right end. O sits at the extreme right end of the row.",
+        "question": "Who sits at the extreme left end of the row?",
+        "options": [
+            "A) M",
+            "B) I",
+            "C) P",
+            "D) K",
+            "E) O"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The passage directly states M sits at the extreme left end (position 1). This is a direct restatement, needing no further deduction.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q072",
+        "section": "Reasoning Ability",
+        "topic": "Linear Seating Arrangement",
+        "difficulty": "Moderate",
+        "passage": "Eight persons — I, J, K, L, M, N, O and P — sit in a straight row facing north. M sits at the extreme left end of the row. Only two persons sit between M and K. P sits third from the left end. N sits immediate right of K. L sits immediate right of N. Only one person sits between L and O. J sits second from the right end. O sits at the extreme right end of the row.",
+        "question": "How many persons sit between P and L?",
+        "options": [
+            "A) 1",
+            "B) 3",
+            "C) 2",
+            "D) 4",
+            "E) None"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The final seating order (left to right) works out to: M, I, P, K, N, L, J, O. P is at position 3 and L is at position 6, so exactly two people (K and N) sit between them, matching option C.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q073",
+        "section": "Reasoning Ability",
+        "topic": "Linear Seating Arrangement",
+        "difficulty": "Moderate",
+        "passage": "Eight persons — I, J, K, L, M, N, O and P — sit in a straight row facing north. M sits at the extreme left end of the row. Only two persons sit between M and K. P sits third from the left end. N sits immediate right of K. L sits immediate right of N. Only one person sits between L and O. J sits second from the right end. O sits at the extreme right end of the row.",
+        "question": "Who sits second to the right of I?",
+        "options": [
+            "A) N",
+            "B) K",
+            "C) L",
+            "D) P",
+            "E) M"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "In the derived order M-I-P-K-N-L-J-O, I is at position 2. Moving two seats to the right lands on position 4, which is K, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q074",
+        "section": "Reasoning Ability",
+        "topic": "Linear Seating Arrangement",
+        "difficulty": "Moderate",
+        "passage": "Eight persons — I, J, K, L, M, N, O and P — sit in a straight row facing north. M sits at the extreme left end of the row. Only two persons sit between M and K. P sits third from the left end. N sits immediate right of K. L sits immediate right of N. Only one person sits between L and O. J sits second from the right end. O sits at the extreme right end of the row.",
+        "question": "Which of the following represents the immediate neighbours of N?",
+        "options": [
+            "A) K and L",
+            "B) P and K",
+            "C) L and J",
+            "D) M and I",
+            "E) J and O"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "In the order M-I-P-K-N-L-J-O, N sits at position 5, flanked by K (position 4) and L (position 6), matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q075",
+        "section": "Reasoning Ability",
+        "topic": "Linear Seating Arrangement",
+        "difficulty": "Moderate",
+        "passage": "Eight persons — I, J, K, L, M, N, O and P — sit in a straight row facing north. M sits at the extreme left end of the row. Only two persons sit between M and K. P sits third from the left end. N sits immediate right of K. L sits immediate right of N. Only one person sits between L and O. J sits second from the right end. O sits at the extreme right end of the row.",
+        "question": "Who sits fourth from the left end of the row?",
+        "options": [
+            "A) N",
+            "B) P",
+            "C) K",
+            "D) L",
+            "E) J"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Counting from the left in the derived order M(1)-I(2)-P(3)-K(4)-N(5)-L(6)-J(7)-O(8), the fourth position is occupied by K, matching option C.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q076",
+        "section": "Reasoning Ability",
+        "topic": "Floor-based Puzzle",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — R, W, T, U, S, V, Q and X — live in an eight-storey building, with the ground floor numbered 1 and the topmost floor numbered 8. R lives on the lowest floor. Only two floors are between R's floor and U's floor. T lives immediately below U. W lives immediately below T. S lives immediately above U. V lives immediately above S. Q lives immediately above V. X lives on the topmost floor.",
+        "question": "How many floors are there between the floors on which R and Q live?",
+        "options": [
+            "A) 3",
+            "B) 4",
+            "C) 5",
+            "D) 6",
+            "E) 2"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Working through the clues sequentially: R=1, W=2, T=3, U=4, S=5, V=6, Q=7, X=8. R is on floor 1 and Q is on floor 7, so there are 5 floors in between (2,3,4,5,6), matching option C.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q077",
+        "section": "Reasoning Ability",
+        "topic": "Floor-based Puzzle",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — R, W, T, U, S, V, Q and X — live in an eight-storey building, with the ground floor numbered 1 and the topmost floor numbered 8. R lives on the lowest floor. Only two floors are between R's floor and U's floor. T lives immediately below U. W lives immediately below T. S lives immediately above U. V lives immediately above S. Q lives immediately above V. X lives on the topmost floor.",
+        "question": "Who lives on floor number 5?",
+        "options": [
+            "A) T",
+            "B) U",
+            "C) V",
+            "D) S",
+            "E) Q"
+        ],
+        "correctOption": 3,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "From the derived floor allocation (R=1, W=2, T=3, U=4, S=5, V=6, Q=7, X=8), floor 5 is occupied by S, matching option D.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q078",
+        "section": "Reasoning Ability",
+        "topic": "Floor-based Puzzle",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — R, W, T, U, S, V, Q and X — live in an eight-storey building, with the ground floor numbered 1 and the topmost floor numbered 8. R lives on the lowest floor. Only two floors are between R's floor and U's floor. T lives immediately below U. W lives immediately below T. S lives immediately above U. V lives immediately above S. Q lives immediately above V. X lives on the topmost floor.",
+        "question": "Who lives immediately above W?",
+        "options": [
+            "A) R",
+            "B) T",
+            "C) U",
+            "D) S",
+            "E) X"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "W is on floor 2 in the derived arrangement, and the floor immediately above (floor 3) is occupied by T, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q079",
+        "section": "Reasoning Ability",
+        "topic": "Floor-based Puzzle",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — R, W, T, U, S, V, Q and X — live in an eight-storey building, with the ground floor numbered 1 and the topmost floor numbered 8. R lives on the lowest floor. Only two floors are between R's floor and U's floor. T lives immediately below U. W lives immediately below T. S lives immediately above U. V lives immediately above S. Q lives immediately above V. X lives on the topmost floor.",
+        "question": "How many people live on floors above U's floor?",
+        "options": [
+            "A) 3",
+            "B) 5",
+            "C) 4",
+            "D) 2",
+            "E) 6"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "U lives on floor 4 out of 8 total floors, so floors 5, 6, 7 and 8 are above U — that's 4 people (S, V, Q, X), matching option C.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q080",
+        "section": "Reasoning Ability",
+        "topic": "Floor-based Puzzle",
+        "difficulty": "Difficult",
+        "passage": "Eight persons — R, W, T, U, S, V, Q and X — live in an eight-storey building, with the ground floor numbered 1 and the topmost floor numbered 8. R lives on the lowest floor. Only two floors are between R's floor and U's floor. T lives immediately below U. W lives immediately below T. S lives immediately above U. V lives immediately above S. Q lives immediately above V. X lives on the topmost floor.",
+        "question": "Who lives on the floor immediately below X?",
+        "options": [
+            "A) V",
+            "B) Q",
+            "C) S",
+            "D) T",
+            "E) U"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "X lives on the topmost floor (8), and the floor immediately below (floor 7) is occupied by Q, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q081",
+        "section": "Reasoning Ability",
+        "topic": "Syllogism",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statements: All pens are books. All books are tables.\nConclusions: I. All pens are tables. II. Some tables are pens.",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Either conclusion I or II follows"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Since all pens are books and all books are tables, it directly follows that all pens are tables (I is true). Because 'all pens are tables' is a universal affirmative statement, its logical converse — 'some tables are pens' — always holds true as long as pens exist, so II is also true. Both conclusions follow.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q082",
+        "section": "Reasoning Ability",
+        "topic": "Syllogism",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statements: Some doctors are engineers. All engineers are teachers.\nConclusions: I. Some doctors are teachers. II. Some teachers are engineers.",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Either conclusion I or II follows"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Combining 'some doctors are engineers' with 'all engineers are teachers' gives 'some doctors are teachers' (I is true). The converse of 'all engineers are teachers' — 'some teachers are engineers' — is always valid (II is true). Both conclusions follow.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q083",
+        "section": "Reasoning Ability",
+        "topic": "Syllogism",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statements: No cups are plates. All plates are spoons.\nConclusions: I. No cups are spoons. II. Some spoons are not cups.",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Either conclusion I or II follows"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Since all plates are spoons but no cups are plates, those plate-spoons are guaranteed to not be cups, making 'some spoons are not cups' true (II follows). However, 'no cups are spoons' (I) is too strong a claim — spoons that aren't plates could still overlap with cups, so I does not necessarily follow. Only II follows.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q084",
+        "section": "Reasoning Ability",
+        "topic": "Syllogism",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statements: All squares are circles. Some circles are triangles.\nConclusions: I. Some triangles are squares. II. Some circles are squares.",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Either conclusion I or II follows"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The converse of 'all squares are circles' — 'some circles are squares' — always holds true as long as squares exist, so II follows. However, the triangles mentioned in the second statement need not be the same circles that are squares, so 'some triangles are squares' (I) is not guaranteed. Only II follows.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q085",
+        "section": "Reasoning Ability",
+        "topic": "Syllogism",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statements: All lions are tigers. No tiger is a leopard.\nConclusions: I. No lion is a leopard. II. All tigers are lions.",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Either conclusion I or II follows"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Since all lions are tigers, and no tiger is a leopard, it follows that no lion can be a leopard either (I is true — a classic valid chain). However, 'all tigers are lions' (II) reverses the original statement incorrectly — not every tiger need be a lion. Only I follows.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q086",
+        "section": "Reasoning Ability",
+        "topic": "Inequality (Coded)",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statement: P > Q ≥ R = S < T\nConclusions: I. P > S   II. R < T",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Cannot be determined"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "From P > Q ≥ R, we can derive P > R (a strict inequality is preserved when chained with ≥). Since R = S, this gives P > S, so conclusion I is true. Separately, since R = S and S < T, we get R < T directly, so conclusion II is also true. Both conclusions follow.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q087",
+        "section": "Reasoning Ability",
+        "topic": "Inequality (Coded)",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statement: A ≥ B > C < D = E\nConclusions: I. A > D   II. E > C",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Cannot be determined"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The chain breaks at 'C < D' because C is shown to be smaller than both B and D, which gives no way to relate A and D directly — so conclusion I cannot be established with certainty. However, since D = E and D > C, it follows directly that E > C, so conclusion II is true. Only conclusion II follows.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q088",
+        "section": "Reasoning Ability",
+        "topic": "Inequality (Coded)",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statement: M < N ≤ O = P > Q\nConclusions: I. M < P   II. N ≤ P",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Cannot be determined"
+        ],
+        "correctOption": 2,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Since O = P, the chain M < N ≤ O becomes M < N ≤ P, and combining a strict inequality with a ≥ chain still guarantees M < P, so conclusion I is true. Also, N ≤ O = P directly gives N ≤ P, so conclusion II is true as well. Both conclusions follow.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q089",
+        "section": "Reasoning Ability",
+        "topic": "Inequality (Coded)",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statement: X > Y = Z ≥ W < V\nConclusions: I. X > W   II. Z > V",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Cannot be determined"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Since Y = Z, the chain X > Y ≥ W becomes X > Z ≥ W, and a strict inequality chained with ≥ still guarantees X > W, so conclusion I is true. However, the relation 'W < V' does not tell us anything definite about how Z compares to V, so conclusion II cannot be established. Only conclusion I follows.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q090",
+        "section": "Reasoning Ability",
+        "topic": "Inequality (Coded)",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Statement: F ≤ G < H = I ≥ J\nConclusions: I. F < I   II. G < J",
+        "options": [
+            "A) Only conclusion I follows",
+            "B) Only conclusion II follows",
+            "C) Both conclusions I and II follow",
+            "D) Neither conclusion I nor II follows",
+            "E) Cannot be determined"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Since H = I, the chain F ≤ G < H becomes F ≤ G < I; whether F equals G or is smaller than it, F is always less than I once G < I is established, so conclusion I is true. However, the relation 'I ≥ J' does not fix whether G is smaller than J or not, so conclusion II cannot be established with certainty. Only conclusion I follows.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q091",
+        "section": "Reasoning Ability",
+        "topic": "Blood Relations",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Pointing to a photograph, a man said, \"She is the daughter of my grandfather's only son.\" How is the woman in the photograph related to the man?",
+        "options": [
+            "A) Sister",
+            "B) Mother",
+            "C) Aunt",
+            "D) Daughter",
+            "E) Cousin"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'My grandfather's only son' refers to the man's own father (since the father is a son of the grandfather, and being the 'only' son means no other candidate exists). The daughter of the man's father is his sister, matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q092",
+        "section": "Reasoning Ability",
+        "topic": "Blood Relations",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "A is B's brother. C is B's mother. D is C's father. E is D's mother. How is A related to D?",
+        "options": [
+            "A) Son",
+            "B) Grandson",
+            "C) Father",
+            "D) Nephew",
+            "E) Grandfather"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "C is B's mother, and A is B's brother, so A is also C's child (specifically her son, since 'brother' implies male). D is C's father, making D the maternal grandfather of both A and B. Therefore A is D's grandson, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q093",
+        "section": "Reasoning Ability",
+        "topic": "Blood Relations",
+        "difficulty": "Moderate",
+        "passage": null,
+        "question": "Pointing to a man, a woman said, \"His mother is the only daughter of my mother.\" How is the woman related to the man?",
+        "options": [
+            "A) Sister",
+            "B) Mother",
+            "C) Aunt",
+            "D) Grandmother",
+            "E) Cousin"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "'The only daughter of my mother' refers to the woman herself, since she is the sole daughter of her own mother. This means the man's mother IS the woman speaking, making the woman the man's mother, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q094",
+        "section": "Reasoning Ability",
+        "topic": "Direction Sense",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Rahul walks 10 m towards north, then turns right and walks 5 m, then turns right again and walks 10 m. In which direction and how far is he from his starting point?",
+        "options": [
+            "A) 5 m East",
+            "B) 10 m North",
+            "C) 5 m West",
+            "D) 15 m South",
+            "E) 5 m South"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Plotting the path on a coordinate grid: start (0,0) → walk north to (0,10) → turn right (now facing east) and walk to (5,10) → turn right again (now facing south) and walk to (5,0). The final point (5,0) is exactly 5 m to the east of the starting point (0,0), matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q095",
+        "section": "Reasoning Ability",
+        "topic": "Direction Sense",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "Point A is 6 km north of point B. Point C is 8 km east of point A. What is the shortest distance between B and C?",
+        "options": [
+            "A) 14 km",
+            "B) 10 km",
+            "C) 8 km",
+            "D) 12 km",
+            "E) 6 km"
+        ],
+        "correctOption": 1,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Setting B at the origin (0,0), A is 6 km north at (0,6), and C is 8 km east of A at (8,6). Using the Pythagorean theorem, the straight-line distance BC = √(8² + 6²) = √(64+36) = √100 = 10 km, matching option B.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q096",
+        "section": "Reasoning Ability",
+        "topic": "Direction Sense",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "A man walks 4 km south, then turns left and walks 3 km, then turns left again and walks 4 km. How far and in which direction is he from his starting point?",
+        "options": [
+            "A) 3 km East",
+            "B) 4 km West",
+            "C) 7 km South",
+            "D) 3 km West",
+            "E) 5 km North"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Plotting the path: start (0,0) → walk south to (0,−4) → turn left (now facing east) and walk to (3,−4) → turn left again (now facing north) and walk to (3,0). The final point (3,0) is exactly 3 km to the east of the starting point, matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q097",
+        "section": "Reasoning Ability",
+        "topic": "Coding-Decoding",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "If in a certain code, 'BANK' is written as 'CBOL', how would 'LOAN' be written in the same code?",
+        "options": [
+            "A) MPBO",
+            "B) MPOB",
+            "C) NPBO",
+            "D) MOBP",
+            "E) MPCO"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Each letter in the code is shifted forward by one position in the alphabet (B→C, A→B, N→O, K→L). Applying the same +1 shift to LOAN: L→M, O→P, A→B, N→O gives 'MPBO', matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q098",
+        "section": "Reasoning Ability",
+        "topic": "Coding-Decoding",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "If 'MONEY' is coded as 'NPOFZ', how would 'CREDIT' be coded in the same language?",
+        "options": [
+            "A) DSFEJU",
+            "B) DSEFJU",
+            "C) DSFEUJ",
+            "D) DTFEJU",
+            "E) DSFEJT"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "The code shifts each letter forward by one position (M→N, O→P, N→O, E→F, Y→Z). Applying the same +1 shift to CREDIT: C→D, R→S, E→F, D→E, I→J, T→U gives 'DSFEJU', matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q099",
+        "section": "Reasoning Ability",
+        "topic": "Coding-Decoding",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "In a certain code, A is written as Z, B as Y, C as X, and so on (a reverse-alphabet code). How would 'CAT' be written in this code?",
+        "options": [
+            "A) XZG",
+            "B) ZXG",
+            "C) XZQ",
+            "D) GZX",
+            "E) XGZ"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Each letter is replaced by its mirror-position letter from the other end of the alphabet (position n becomes position 27−n). C (3rd letter) becomes X (24th), A (1st) becomes Z (26th), and T (20th) becomes G (7th), giving 'XZG', matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    },
+    {
+        "id": "m1-q100",
+        "section": "Reasoning Ability",
+        "topic": "Coding-Decoding",
+        "difficulty": "Easy",
+        "passage": null,
+        "question": "If each letter in a word is replaced by the letter 2 positions ahead in the alphabet, how would 'GOLD' be coded?",
+        "options": [
+            "A) IQNF",
+            "B) IQMF",
+            "C) HQNF",
+            "D) IPNF",
+            "E) IQNE"
+        ],
+        "correctOption": 0,
+        "userChoice": null,
+        "status": "status-not-visited",
+        "explanation": "Shifting each letter forward by 2 positions: G→I, O→Q, L→N, D→F, giving 'IQNF', matching option A.",
+        "basedOn": "SBI PO Prelims pattern (Reasoning Ability)",
+        "needsReview": false
+    }
+];
 
-        // Fill remaining questions dynamically for full palette feel
-        for (let i = 4; i <= 35; i++) {
-            examQuestionsData.push({
-                section: i <= 10 ? "English Language" : (i <= 22 ? "Quantitative Aptitude" : "Reasoning Ability"),
-                passage: null,
-                question: `Sample SBI PO High-Yield Exam Question #${i}: Evaluate the statement logic or calculate the value under 2026 examination rules.`,
-                options: [
-                    `Option A for Question #${i}`,
-                    `Option B for Question #${i}`,
-                    `Option C for Question #${i}`,
-                    `Option D for Question #${i}`,
-                    `Option E for Question #${i}`
-                ],
-                correctOption: (i % 5),
-                userChoice: null,
-                status: 'status-not-visited'
-            });
-        }
 
         /* -------------------------------------------------------------
            2. VIEW SWITCHING & NAVIGATION
@@ -1473,12 +3553,22 @@
                     tab.className = "sec-tab px-4 py-1.5 font-bold rounded bg-slate-300 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-400";
                 }
             });
+            const sectionOrder = ["English Language", "Quantitative Aptitude", "Reasoning Ability"];
             const sectionTitles = ["English", "Quantitative Aptitude", "Reasoning Ability"];
             document.getElementById('palette-section-title').innerText = `Section: ${sectionTitles[secIdx]}`;
-            
-            // Jump to first question of section
-            const startIdx = secIdx === 0 ? 0 : (secIdx === 1 ? 2 : 3);
-            renderQuestion(startIdx);
+
+            // Jump to first question of the selected section (computed dynamically from actual data,
+            // so this stays correct no matter how many questions each section contains)
+            const targetSection = sectionOrder[secIdx];
+            const startIdx = examQuestionsData.findIndex(q => q.section === targetSection);
+            renderQuestion(startIdx >= 0 ? startIdx : 0);
+        }
+
+        function getSectionBounds(sectionName) {
+            const indices = examQuestionsData
+                .map((q, i) => (q.section === sectionName ? i : -1))
+                .filter(i => i !== -1);
+            return { start: indices[0], end: indices[indices.length - 1], count: indices.length };
         }
 
         function startExamTimer() {
@@ -1540,6 +3630,165 @@
         }
         function closeScorecardModal() {
             document.getElementById('scorecard-modal').classList.add('hidden');
+        }
+
+        /* -------------------------------------------------------------
+           6b. REVIEW MODE — Post-Exam "Review Wrong Answers"
+        ------------------------------------------------------------- */
+        let currentReviewFilter = 'wrong';
+
+        function openReviewMode() {
+            populateReviewTopicFilter();
+            renderWeakTopics();
+            setReviewFilter('wrong'); // also calls renderReviewList()
+            document.getElementById('view-review').classList.remove('hidden');
+        }
+
+        function closeReviewMode() {
+            document.getElementById('view-review').classList.add('hidden');
+        }
+
+        function setReviewFilter(filter) {
+            currentReviewFilter = filter;
+            document.querySelectorAll('.review-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-red-500', 'bg-sbi-blue', 'text-white', 'shadow');
+                btn.classList.add('bg-slate-200', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+            });
+            const activeBtn = document.getElementById(`review-filter-${filter}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-200', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+                activeBtn.classList.add(filter === 'wrong' ? 'bg-red-500' : 'bg-sbi-blue', 'text-white', 'shadow');
+            }
+            renderReviewList();
+        }
+
+        function getFilteredQuestions() {
+            const topicFilterEl = document.getElementById('review-topic-filter');
+            const topicFilter = topicFilterEl ? topicFilterEl.value : 'all';
+
+            return examQuestionsData.filter(q => {
+                const isWrong = q.userChoice !== null && q.userChoice !== q.correctOption;
+                const isCorrect = q.userChoice !== null && q.userChoice === q.correctOption;
+                const isUnattempted = q.userChoice === null;
+
+                let matchesStatus = true;
+                if (currentReviewFilter === 'wrong') matchesStatus = isWrong;
+                else if (currentReviewFilter === 'correct') matchesStatus = isCorrect;
+                else if (currentReviewFilter === 'unattempted') matchesStatus = isUnattempted;
+                // 'all' -> matchesStatus stays true
+
+                const matchesTopic = (topicFilter === 'all') || (q.topic === topicFilter);
+                return matchesStatus && matchesTopic;
+            });
+        }
+
+        function populateReviewTopicFilter() {
+            const select = document.getElementById('review-topic-filter');
+            if (!select) return;
+            const topics = [...new Set(examQuestionsData.map(q => q.topic))].sort();
+            select.innerHTML = '<option value="all">All Topics</option>' +
+                topics.map(t => `<option value="${t}">${t}</option>`).join('');
+        }
+
+        function renderWeakTopics() {
+            const container = document.getElementById('weak-topics-list');
+            if (!container) return;
+
+            // Count wrong answers per topic
+            const wrongCounts = {};
+            examQuestionsData.forEach(q => {
+                if (q.userChoice !== null && q.userChoice !== q.correctOption) {
+                    wrongCounts[q.topic] = (wrongCounts[q.topic] || 0) + 1;
+                }
+            });
+
+            const sortedTopics = Object.entries(wrongCounts).sort((a, b) => b[1] - a[1]);
+
+            if (sortedTopics.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500">No wrong answers recorded yet — attempt a mock test first, or great job if you've cleared this one!</p>`;
+                return;
+            }
+
+            const maxCount = sortedTopics[0][1];
+            container.innerHTML = sortedTopics.map(([topic, count]) => `
+                <div class="flex items-center gap-3">
+                    <span class="text-xs w-48 truncate text-slate-700 dark:text-slate-300 font-medium">${topic}</span>
+                    <div class="flex-1 h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-red-500 rounded-full" style="width: ${(count / maxCount) * 100}%"></div>
+                    </div>
+                    <span class="text-xs font-bold text-red-500 w-16 text-right">${count} wrong</span>
+                </div>
+            `).join('');
+        }
+
+        function renderReviewList() {
+            renderWeakTopics();
+            const listEl = document.getElementById('review-questions-list');
+            const summaryEl = document.getElementById('review-summary-line');
+            if (!listEl) return;
+
+            const filtered = getFilteredQuestions();
+
+            const totalAttempted = examQuestionsData.filter(q => q.userChoice !== null).length;
+            const totalWrong = examQuestionsData.filter(q => q.userChoice !== null && q.userChoice !== q.correctOption).length;
+            const totalCorrect = totalAttempted - totalWrong;
+            if (summaryEl) {
+                summaryEl.innerText = `${totalCorrect} Correct • ${totalWrong} Wrong • ${examQuestionsData.length - totalAttempted} Unattempted — showing ${filtered.length} question(s)`;
+            }
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-16 text-slate-400">
+                        <i class="fa-solid fa-circle-check text-4xl mb-3 text-emerald-400"></i>
+                        <p class="text-sm font-semibold">Nothing to show for this filter.</p>
+                    </div>`;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(q => {
+                const passageHtml = q.passage ? `
+                    <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs leading-relaxed font-serif mb-3 whitespace-pre-line">
+                        ${q.passage}
+                    </div>` : '';
+
+                const optionsHtml = q.options.map((opt, i) => {
+                    let cls = "flex items-center gap-2 p-2.5 rounded-lg text-xs border ";
+                    let badge = '';
+                    if (i === q.correctOption) {
+                        cls += "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold";
+                        badge = '<span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 ml-auto"><i class="fa-solid fa-check"></i> Correct Answer</span>';
+                    } else if (i === q.userChoice) {
+                        cls += "border-red-400 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 font-semibold";
+                        badge = '<span class="text-[10px] font-bold text-red-500 ml-auto"><i class="fa-solid fa-xmark"></i> Your Answer</span>';
+                    } else {
+                        cls += "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400";
+                    }
+                    return `<div class="${cls}"><span>${opt}</span>${badge}</div>`;
+                }).join('');
+
+                const statusTag = q.userChoice === null
+                    ? '<span class="px-2 py-0.5 text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full">Unattempted</span>'
+                    : (q.userChoice === q.correctOption
+                        ? '<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-500 rounded-full">Correct</span>'
+                        : '<span class="px-2 py-0.5 text-[10px] font-bold bg-red-500/10 text-red-500 rounded-full">Wrong</span>');
+
+                return `
+                <div class="glass-card rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wide text-sbi-blue dark:text-sbi-cyan">${q.section} • ${q.topic}</span>
+                        ${statusTag}
+                    </div>
+                    ${passageHtml}
+                    <div class="font-bold text-sm text-slate-900 dark:text-white leading-relaxed whitespace-pre-line">${q.question}</div>
+                    <div class="space-y-1.5">${optionsHtml}</div>
+                    <div class="p-3 rounded-xl bg-purple-500/5 border border-purple-500/20">
+                        <p class="text-[10px] font-bold text-purple-600 dark:text-purple-300 uppercase tracking-wide mb-1">
+                            <i class="fa-solid fa-lightbulb mr-1"></i> Explanation
+                        </p>
+                        <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${q.explanation}</p>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         /* -------------------------------------------------------------
