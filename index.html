@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBI PO MASTER 100+ | India's #1 SBI PO Mock Test & AI Analytics Platform</title>
+    <meta name="description" content="India's most realistic SBI PO Mock Test Platform with 100+ full length tests, AI rank predictor, section wise analytics and SBI exam interface simulator.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        sbi: {
+                            blue: '#004B87',
+                            lightBlue: '#00A3E0',
+                            navy: '#0A192F',
+                            cyan: '#00F2FE',
+                            accent: '#FF6B00',
+                            green: '#00C853',
+                            red: '#FF3D00',
+                            purple: '#7C4DFF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome & Lucide Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* SBI Real Exam Specific Styling */
+        .sbi-palette-btn {
+            width: 38px;
+            height: 34px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        /* SBI Color Palette Codes */
+        .status-not-visited { background-color: #E2E8F0; color: #334155; border: 1px solid #CBD5E1; }
+        .dark .status-not-visited { background-color: #334155; color: #94A3B8; border-color: #475569; }
+        
+        .status-not-answered { background-color: #EF4444; color: white; clip-path: polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%); }
+        
+        .status-answered { background-color: #10B981; color: white; clip-path: polygon(0 25%, 50% 0, 100% 25%, 100% 100%, 0 100%); }
+        
+        .status-marked { background-color: #8B5CF6; color: white; border-radius: 50%; }
+        
+        .status-ans-marked { background-color: #8B5CF6; color: white; border-radius: 50%; position: relative; }
+        .status-ans-marked::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background-color: #10B981;
+            border-radius: 50%;
+            border: 1px solid white;
+        }
+
+        /* Glassmorphism utilities */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+        }
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94A3B8;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 163, 224, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(0, 242, 254, 0.7); }
+        }
+        .pulse-effect {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#070C18] text-slate-800 dark:text-slate-100 font-sans antialiased transition-colors duration-300 min-h-screen">
+
+    <!-- Anti-Cheat Overlay Alert -->
+    <div id="anti-cheat-alert" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border-2 border-red-500 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl animate-bounce">
+            <div class="w-16 h-16 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Anti-Cheat Violation Warning</h3>
+            <p class="text-slate-600 dark:text-slate-300 text-sm mb-4">
+                Tab switching or leaving full-screen mode detected! SBI Security Monitor logged this activity. Repeat attempts will result in auto-submission.
+            </p>
+            <div class="bg-red-50 dark:bg-red-950/50 p-3 rounded-lg text-xs text-red-700 dark:text-red-300 font-semibold mb-6">
+                Violation Count: <span id="violation-count">1</span> / 3 Allowed
+            </div>
+            <button onclick="resumeFromViolation()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg transition">
+                Return to Exam Environment
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER (Switches between Dashboard & Exam Mode) -->
+    <div id="app-viewport" class="flex flex-col min-h-screen">
+        
+        <!-- TOP NAVIGATION BAR (Visible in Dashboard Mode) -->
+        <header id="main-header" class="sticky top-0 z-40 bg-white/90 dark:bg-[#0B132B]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-all">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+                
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sbi-blue via-sbi-lightBlue to-sbi-cyan flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-sbi-blue/30">
+                        S
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">SBI PO <span class="text-sbi-lightBlue">MASTER</span></span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/30 rounded-full">100+ MOCKS</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">India's #1 SBI PO Exam Preparation Platform</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-200/60 dark:border-slate-800">
+                    <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 text-sbi-blue dark:text-sbi-cyan shadow-sm">
+                        <i class="fa-solid fa-chart-pie mr-1.5"></i> Dashboard
+                    </button>
+                    <button onclick="switchView('mocks')" id="nav-mocks" class="nav-btn px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-solid fa-file-pen mr-1.5"></i> 100+ Mock Tests
+                    </button>
+                    <button onclick="switchView('leaderboard')" id="nav-leaderboard" class="nav-btn px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-solid fa-trophy mr-1.5"></i> Live Ranks
+                    </button>
+                    <button onclick="switchView('study')" id="nav-study" class="nav-btn px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-solid fa-book-open mr-1.5"></i> Study Material
+                    </button>
+                </nav>
+
+                <!-- Actions / Controls -->
+                <div class="flex items-center gap-3">
+                    <!-- Quick Live Test CTA -->
+                    <button onclick="launchExamModal('SBI PO Prelims Full Mock #42')" class="hidden lg:flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-sbi-blue to-sbi-lightBlue hover:from-sbi-lightBlue hover:to-sbi-blue rounded-xl shadow-md shadow-sbi-blue/20 transition-all hover:scale-[1.02]">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        Live SBI Prelims Mock
+                    </button>
+
+                    <!-- AI Tutor Drawer Trigger -->
+                    <button onclick="toggleAiDrawer()" class="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition relative">
+                        <i class="fa-solid fa-robot text-base"></i>
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+                    </button>
+
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        <i id="theme-icon" class="fa-solid fa-moon text-base"></i>
+                    </button>
+
+                    <!-- User Profile -->
+                    <div class="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Student Profile" class="w-9 h-9 rounded-xl object-cover ring-2 ring-sbi-lightBlue/40">
+                        <div class="hidden sm:block text-left">
+                            <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-none">Appi baby</h4>
+                            <span class="text-[10px] font-semibold text-emerald-500">AIR #142 • SBI Aspirant</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- DASHBOARD CONTAINER VIEW -->
+        <main id="view-dashboard" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            
+            <!-- HERO BANNER / AI SELECTION PREDICTION -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sbi-navy via-slate-900 to-sbi-blue p-6 sm:p-8 border border-slate-800 shadow-2xl text-white">
+                <div class="absolute -right-10 -top-10 w-96 h-96 bg-sbi-lightBlue/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                    
+                    <div class="lg:col-span-2 space-y-3">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs text-sbi-cyan font-semibold">
+                            <i class="fa-solid fa-sparkles text-amber-400"></i> AI Target Exam Predictor Engine 3.0
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                            Target SBI PO 2026: <span class="text-transparent bg-clip-text bg-gradient-to-r from-sbi-cyan to-blue-400">86% Selection Probability</span>
+                        </h1>
+                        <p class="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+                            Based on your last 12 Prelims Mocks, your performance in Quantitative Aptitude is in the 98.4th percentile. Focus on <span class="text-amber-300 font-semibold underline">Seating Arrangement</span> to boost selection odds above 92%.
+                        </p>
+                        
+                        <!-- Quick Stats Badges -->
+                        <div class="pt-2 flex flex-wrap items-center gap-4 text-xs">
+                            <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                                <i class="fa-solid fa-bullseye text-emerald-400"></i>
+                                <span>Expected Score: <strong class="text-white">72.5 / 100</strong></span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                                <i class="fa-solid fa-trophy text-amber-400"></i>
+                                <span>Est. National Rank: <strong class="text-white">TOP 150</strong></span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                                <i class="fa-solid fa-user-graduate text-purple-400"></i>
+                                <span>Interview Chances: <strong class="text-emerald-400 font-bold">Very High</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Test Card inside Hero -->
+                    <div class="bg-white/10 backdrop-blur-xl border border-white/15 p-5 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-md font-bold">NEW RECOMMENDED MOCK</span>
+                            <span class="text-slate-300"><i class="fa-regular fa-clock mr-1"></i> 60 Mins</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-white">SBI PO Prelims All-India Live Mock #48</h3>
+                            <p class="text-xs text-slate-300 mt-1">100 Questions • 100 Marks • Exact 2026 SBI Pattern</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="text-xs text-slate-300">
+                                <i class="fa-solid fa-users text-sbi-cyan mr-1"></i> 34,210 Aspirants Took
+                            </div>
+                            <button onclick="launchExamModal('SBI PO Prelims All-India Live Mock #48')" class="px-4 py-2 bg-sbi-cyan text-sbi-navy hover:bg-white font-extrabold text-xs rounded-xl shadow-lg transition duration-200 flex items-center gap-1.5">
+                                <i class="fa-solid fa-play"></i> Start Now
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- KEY DASHBOARD METRIC CARDS -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
+                
+                <!-- Card 1 -->
+                <div class="glass-card p-4 rounded-2xl space-y-1">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs">
+                        <span>Total Mocks</span>
+                        <i class="fa-solid fa-layer-group text-sbi-lightBlue"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">100+</div>
+                    <div class="text-[10px] text-emerald-500 font-semibold">+12 Sectionals</div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card p-4 rounded-2xl space-y-1">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs">
+                        <span>Completed</span>
+                        <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">42</div>
+                    <div class="text-[10px] text-slate-500 font-semibold">42% Progress</div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card p-4 rounded-2xl space-y-1">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs">
+                        <span>Current Rank</span>
+                        <i class="fa-solid fa-trophy text-amber-500"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">#142</div>
+                    <div class="text-[10px] text-emerald-500 font-semibold">Top 0.5% India</div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="glass-card p-4 rounded-2xl space-y-1">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs">
+                        <span>Percentile</span>
+                        <i class="fa-solid fa-chart-line text-purple-500"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">98.4%</div>
+                    <div class="text-[10px] text-emerald-500 font-semibold">↑ 1.2% this week</div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="glass-card p-4 rounded-2xl space-y-1">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs">
+                        <span>Accuracy</span>
+                        <i class="fa-solid fa-bullseye text-sbi-cyan"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">84.5%</div>
+                    <div class="text-[10px] text-slate-500 font-semibold">Target > 85%</div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="glass-card p-4 rounded-2xl space-y-1">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs">
+                        <span>Avg Score</span>
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">71.5</div>
+                    <div class="text-[10px] text-slate-500 font-semibold">Cutoff: 63.0</div>
+                </div>
+
+                <!-- Card 7 -->
+                <div class="glass-card p-4 rounded-2xl space-y-1">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs">
+                        <span>Study Hours</span>
+                        <i class="fa-solid fa-clock text-blue-500"></i>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">124h</div>
+                    <div class="text-[10px] text-emerald-500 font-semibold">3.5h Daily Avg</div>
+                </div>
+
+                <!-- Card 8 -->
+                <div class="glass-card p-4 rounded-2xl space-y-1">
+                    <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs">
+                        <span>Weak Subject</span>
+                        <i class="fa-solid fa-triangle-exclamation text-red-500"></i>
+                    </div>
+                    <div class="text-base font-extrabold text-red-500 dark:text-red-400 truncate">Reasoning</div>
+                    <div class="text-[10px] text-red-400 font-semibold">Seating Arr. 42%</div>
+                </div>
+
+            </div>
+
+            <!-- ANALYTICS & WEAKNESS BREAKDOWN GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Main Performance Trend Chart (2 Cols) -->
+                <div class="lg:col-span-2 glass-card p-6 rounded-3xl space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900 dark:text-white">Performance Trajectory</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Score vs SBI PO Prelims Cutoff Trend (Last 10 Mock Tests)</p>
+                        </div>
+                        <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+                            <button class="px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-sbi-blue dark:text-sbi-cyan shadow-sm">Score</button>
+                            <button class="px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">Percentile</button>
+                            <button class="px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">Accuracy</button>
+                        </div>
+                    </div>
+                    <div class="h-64 sm:h-80 w-full relative">
+                        <canvas id="performanceTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Subject-Wise Mastery Radar / Progress & Weak Topics -->
+                <div class="glass-card p-6 rounded-3xl space-y-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-lg text-slate-900 dark:text-white">Subject Mastery</h3>
+                            <span class="text-xs font-bold text-purple-500 bg-purple-500/10 px-2.5 py-1 rounded-full">AI Diagnostics</span>
+                        </div>
+                        <div class="h-48 w-full relative mb-4">
+                            <canvas id="subjectRadarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Weakness Diagnostic List -->
+                    <div class="space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+                        <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Priority Focus Areas</h4>
+                        
+                        <div class="space-y-2">
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span class="text-slate-800 dark:text-slate-200"><i class="fa-solid fa-puzzle-piece text-red-500 mr-1.5"></i> Circular Seating Arrangement</span>
+                                    <span class="text-red-500 font-bold">42% Acc</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-red-500 rounded-full" style="width: 42%;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span class="text-slate-800 dark:text-slate-200"><i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> Caselet Data Interpretation</span>
+                                    <span class="text-amber-500 font-bold">58% Acc</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-amber-500 rounded-full" style="width: 58%;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span class="text-slate-800 dark:text-slate-200"><i class="fa-solid fa-spell-check text-emerald-500 mr-1.5"></i> Reading Comprehension</span>
+                                    <span class="text-emerald-500 font-bold">88% Acc</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-emerald-500 rounded-full" style="width: 88%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- DAILY GOALS & MOCK TEST EXPLORER SNAPSHOT -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Daily Goals & Action Plan (1 Col) -->
+                <div class="glass-card p-6 rounded-3xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-base text-slate-900 dark:text-white">Daily Preparation Goals</h3>
+                        <span class="text-xs font-semibold text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-full">3 / 4 Completed</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-sbi-lightBlue transition">
+                            <input type="checkbox" checked class="mt-1 w-4 h-4 rounded text-sbi-blue focus:ring-sbi-lightBlue">
+                            <div class="text-xs">
+                                <p class="font-bold text-slate-800 dark:text-slate-200 line-through">Attempt Daily Speed Quant Quiz #14</p>
+                                <p class="text-slate-500 dark:text-slate-400">15 Questions • Quadratic & Approximations</p>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-sbi-lightBlue transition">
+                            <input type="checkbox" checked class="mt-1 w-4 h-4 rounded text-sbi-blue focus:ring-sbi-lightBlue">
+                            <div class="text-xs">
+                                <p class="font-bold text-slate-800 dark:text-slate-200 line-through">Read Daily Hindu Vocab & Editorial</p>
+                                <p class="text-slate-500 dark:text-slate-400">10 New Words + Contextual Sentences</p>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-slate-100/70 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-sbi-lightBlue transition">
+                            <input type="checkbox" checked class="mt-1 w-4 h-4 rounded text-sbi-blue focus:ring-sbi-lightBlue">
+                            <div class="text-xs">
+                                <p class="font-bold text-slate-800 dark:text-slate-200 line-through">Complete SBI Mains Descriptive Essay #05</p>
+                                <p class="text-slate-500 dark:text-slate-400">Topic: Digital Currency & Banking Security</p>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 cursor-pointer hover:bg-purple-500/20 transition">
+                            <input type="checkbox" class="mt-1 w-4 h-4 rounded text-purple-600 focus:ring-purple-500">
+                            <div class="text-xs">
+                                <p class="font-bold text-purple-700 dark:text-purple-300">AI Recommended Task: 20 Seating Puzzles</p>
+                                <p class="text-purple-600/80 dark:text-purple-400">Target Time: 2.5 mins per puzzle</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Featured Mock Test Series (2 Cols) -->
+                <div class="lg:col-span-2 glass-card p-6 rounded-3xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-base text-slate-900 dark:text-white">Active Mock Test Series</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">100+ Prelims & Mains Full Length Tests with Video Solutions</p>
+                        </div>
+                        <button onclick="switchView('mocks')" class="text-xs font-bold text-sbi-lightBlue hover:underline flex items-center gap-1">
+                            View All 100+ Tests <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        
+                        <!-- Test Card 1 -->
+                        <div class="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3 hover:border-sbi-lightBlue/50 transition">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="px-2 py-0.5 rounded bg-blue-500/10 text-sbi-lightBlue font-bold border border-blue-500/20">PRELIMS FULL MOCK</span>
+                                <span class="text-slate-500 dark:text-slate-400 font-semibold"><i class="fa-solid fa-star text-amber-400"></i> High Yield</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">SBI PO Prelims Full Mock #12</h4>
+                            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                <span><i class="fa-regular fa-file-lines mr-1"></i> 100 Qs</span>
+                                <span><i class="fa-regular fa-clock mr-1"></i> 60 Mins</span>
+                                <span><i class="fa-solid fa-award mr-1"></i> 100 Marks</span>
+                            </div>
+                            <div class="pt-2 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+                                <span class="text-[11px] text-emerald-500 font-semibold"><i class="fa-solid fa-check-circle"></i> Completed • Score: 74/100</span>
+                                <button onclick="openScorecardModal()" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-xs rounded-lg transition">
+                                    Analysis
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Test Card 2 -->
+                        <div class="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3 hover:border-sbi-lightBlue/50 transition">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 font-bold border border-amber-500/20">SBI MAINS FULL MOCK</span>
+                                <span class="text-purple-400 font-bold"><i class="fa-solid fa-brain"></i> Hard Level</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">SBI PO Mains Mock #04 (With Descriptive)</h4>
+                            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                <span><i class="fa-regular fa-file-lines mr-1"></i> 155 Qs</span>
+                                <span><i class="fa-regular fa-clock mr-1"></i> 180 Mins</span>
+                                <span><i class="fa-solid fa-award mr-1"></i> 200 Marks</span>
+                            </div>
+                            <div class="pt-2 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+                                <span class="text-[11px] text-amber-500 font-semibold"><i class="fa-solid fa-clock"></i> Unattempted</span>
+                                <button onclick="launchExamModal('SBI PO Mains Mock #04')" class="px-3 py-1.5 bg-sbi-blue hover:bg-sbi-lightBlue text-white font-bold text-xs rounded-lg shadow transition">
+                                    Take Test
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Test Card 3 -->
+                        <div class="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3 hover:border-sbi-lightBlue/50 transition">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-bold border border-emerald-500/20">PREVIOUS YEAR PAPER</span>
+                                <span class="text-slate-500 dark:text-slate-400 font-semibold">2025 Memory Based</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">SBI PO Prelims 2025 Official Memory Paper</h4>
+                            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                <span><i class="fa-regular fa-file-lines mr-1"></i> 100 Qs</span>
+                                <span><i class="fa-regular fa-clock mr-1"></i> 60 Mins</span>
+                                <span><i class="fa-solid fa-award mr-1"></i> 100 Marks</span>
+                            </div>
+                            <div class="pt-2 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+                                <span class="text-[11px] text-slate-400 font-semibold">18,500+ Attempted</span>
+                                <button onclick="launchExamModal('SBI PO Prelims 2025 Memory Paper')" class="px-3 py-1.5 bg-sbi-blue hover:bg-sbi-lightBlue text-white font-bold text-xs rounded-lg shadow transition">
+                                    Take Test
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Test Card 4 -->
+                        <div class="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3 hover:border-sbi-lightBlue/50 transition">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 font-bold border border-purple-500/20">SECTIONAL TEST</span>
+                                <span class="text-slate-500 dark:text-slate-400 font-semibold">Reasoning Special</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">Reasoning Booster: Puzzles & Seating #09</h4>
+                            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                <span><i class="fa-regular fa-file-lines mr-1"></i> 35 Qs</span>
+                                <span><i class="fa-regular fa-clock mr-1"></i> 20 Mins</span>
+                                <span><i class="fa-solid fa-award mr-1"></i> 35 Marks</span>
+                            </div>
+                            <div class="pt-2 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+                                <span class="text-[11px] text-purple-400 font-semibold"><i class="fa-solid fa-bolt"></i> AI Recommended</span>
+                                <button onclick="launchExamModal('Reasoning Booster: Puzzles & Seating #09')" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-lg shadow transition">
+                                    Practice
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <!-- 100+ MOCKS DIRECTORY VIEW -->
+        <main id="view-mocks" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6 rounded-3xl">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">100+ SBI PO Mock Test Vault</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Prelims, Mains, Chapter Wise, Previous Year & Daily Speed Tests</p>
+                </div>
+                <!-- Filter Pills -->
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                    <button class="px-3.5 py-1.5 rounded-xl bg-sbi-blue text-white font-bold shadow-md">All (112)</button>
+                    <button class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-200">Prelims Full (45)</button>
+                    <button class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-200">Mains Full (25)</button>
+                    <button class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-200">Previous Years (15)</button>
+                    <button class="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-200">Sectional (27)</button>
+                </div>
+            </div>
+
+            <!-- Grid of Mock Tests -->
+            <div id="mocks-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamically Populated by JS -->
+            </div>
+        </main>
+
+        <!-- LIVE LEADERBOARD VIEW -->
+        <main id="view-leaderboard" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            <div class="glass-card p-6 rounded-3xl space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">All India Live Leaderboard</h2>
+                            <span class="px-2.5 py-0.5 text-xs font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full animate-pulse">● LIVE UPDATING</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Real-time ranking computed from 2,50,000+ active SBI PO aspirants across India</p>
+                    </div>
+
+                    <!-- Rank Filters -->
+                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl text-xs font-semibold">
+                        <button class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-700 text-sbi-blue dark:text-sbi-cyan shadow-sm">All India Rank</button>
+                        <button class="px-3 py-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">State Rank (Maharashtra)</button>
+                        <button class="px-3 py-1.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">Weekly Rank</button>
+                    </div>
+                </div>
+
+                <!-- TOP 3 PODIUM DISPLAY -->
+                <div class="grid grid-cols-3 gap-4 max-w-2xl mx-auto pt-4 text-center">
+                    
+                    <!-- Rank 2 -->
+                    <div class="bg-gradient-to-t from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-900/80 border border-slate-300 dark:border-slate-700 p-4 rounded-2xl flex flex-col items-center justify-end space-y-2 relative transform translate-y-4">
+                        <div class="w-12 h-12 rounded-full overflow-hidden ring-4 ring-slate-400">
+                            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -top-3 w-6 h-6 rounded-full bg-slate-400 text-slate-900 font-bold text-xs flex items-center justify-center shadow">2</div>
+                        <h4 class="font-bold text-xs text-slate-900 dark:text-white">Ananya Verma</h4>
+                        <span class="text-xs font-extrabold text-sbi-lightBlue">89.5 Marks</span>
+                        <span class="text-[10px] text-slate-500">Percentile: 99.8%</span>
+                    </div>
+
+                    <!-- Rank 1 -->
+                    <div class="bg-gradient-to-t from-amber-500/20 to-amber-500/5 border-2 border-amber-500/50 p-4 rounded-2xl flex flex-col items-center justify-end space-y-2 relative shadow-xl shadow-amber-500/10">
+                        <div class="w-16 h-16 rounded-full overflow-hidden ring-4 ring-amber-400">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -top-3 w-8 h-8 rounded-full bg-amber-400 text-slate-900 font-extrabold text-sm flex items-center justify-center shadow-lg"><i class="fa-solid fa-crown"></i></div>
+                        <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Vikramaditya Roy</h4>
+                        <span class="text-sm font-extrabold text-amber-500">94.25 Marks</span>
+                        <span class="text-[11px] text-emerald-400 font-bold">100 Percentile</span>
+                    </div>
+
+                    <!-- Rank 3 -->
+                    <div class="bg-gradient-to-t from-amber-800/20 to-amber-800/5 border border-amber-700/30 p-4 rounded-2xl flex flex-col items-center justify-end space-y-2 relative transform translate-y-6">
+                        <div class="w-12 h-12 rounded-full overflow-hidden ring-4 ring-amber-700">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -top-3 w-6 h-6 rounded-full bg-amber-700 text-white font-bold text-xs flex items-center justify-center shadow">3</div>
+                        <h4 class="font-bold text-xs text-slate-900 dark:text-white">Priya Patel</h4>
+                        <span class="text-xs font-extrabold text-sbi-lightBlue">87.75 Marks</span>
+                        <span class="text-[10px] text-slate-500">Percentile: 99.5%</span>
+                    </div>
+
+                </div>
+
+                <!-- LEADERBOARD TABLE -->
+                <div class="overflow-x-auto pt-4">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                                <th class="py-3 px-4">Rank</th>
+                                <th class="py-3 px-4">Aspirant</th>
+                                <th class="py-3 px-4">State</th>
+                                <th class="py-3 px-4">Mock Test</th>
+                                <th class="py-3 px-4">Accuracy</th>
+                                <th class="py-3 px-4">Time Taken</th>
+                                <th class="py-3 px-4 text-right">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-table-body" class="divide-y divide-slate-200 dark:divide-slate-800">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- STUDY MATERIAL VIEW -->
+        <main id="view-study" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            <div class="glass-card p-6 rounded-3xl space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">SBI PO High-Yield Study Vault</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Curated Formulas, Short Tricks, Daily Banking Awareness & Current Affairs PDFs</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- PDF Card 1 -->
+                    <div class="p-5 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-slate-900 dark:text-white">Quant 50 Short Tricks & Vedic Math Formula Handbook</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Master Data Interpretation, Quadratic Equations & Approximations in under 15 seconds.</p>
+                        <button onclick="downloadStudyPdf('Vedic_Math_Formulas.pdf')" class="w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-sbi-blue hover:text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Download PDF (4.2 MB)
+                        </button>
+                    </div>
+
+                    <!-- PDF Card 2 -->
+                    <div class="p-5 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-landmark"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-slate-900 dark:text-white">Complete Banking & Financial Awareness 2026 Capsules</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">RBI Monetary Policy updates, Banking Terms, Financial Schemes & Monetary History.</p>
+                        <button onclick="downloadStudyPdf('Banking_Awareness_2026.pdf')" class="w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-sbi-blue hover:text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Download PDF (8.7 MB)
+                        </button>
+                    </div>
+
+                    <!-- PDF Card 3 -->
+                    <div class="p-5 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-puzzle-piece"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-slate-900 dark:text-white">100 High-Level Seating & Puzzle Master Booklet</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Floor, Flat, Circular, Parallel Row & Uncertain Number Puzzles with Video Diagrams.</p>
+                        <button onclick="downloadStudyPdf('100_Puzzles_SBI_Mains.pdf')" class="w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-sbi-blue hover:text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Download PDF (6.1 MB)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer id="main-footer" class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#070C18] py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <p class="font-semibold text-slate-700 dark:text-slate-300">SBI PO MASTER 100+ Platform • India's Largest AI Test Simulator</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Designed with micro-animations & real SBI examination interface standards.</p>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-semibold">
+                    <span class="text-emerald-500"><i class="fa-solid fa-shield-halved"></i> 256-Bit SSL Secured</span>
+                    <span class="text-slate-400">•</span>
+                    <span>System Status: <strong class="text-emerald-400">Operational</strong></span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- AI TUTOR DRAWER (SLIDE OVER) -->
+    <div id="ai-tutor-drawer" class="hidden fixed inset-0 z-50 overflow-hidden bg-slate-900/50 backdrop-blur-sm transition-opacity">
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-white dark:bg-[#0B132B] border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col">
+                
+                <!-- Drawer Header -->
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-purple-500/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-purple-600/30">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                AI SBI Mentor
+                                <span class="px-2 py-0.5 text-[10px] bg-purple-500/20 text-purple-400 rounded-md font-bold">ONLINE</span>
+                            </h3>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Powered by Neural Exam Analysis Engine</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleAiDrawer()" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Chat Body -->
+                <div id="ai-chat-body" class="flex-1 p-4 overflow-y-auto space-y-4 text-xs">
+                    
+                    <!-- Welcome AI message -->
+                    <div class="flex items-start gap-3">
+                        <div class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs flex-shrink-0">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/50 p-3 rounded-2xl rounded-tl-none text-slate-800 dark:text-slate-200 space-y-2 max-w-[85%]">
+                            <p class="font-semibold text-purple-700 dark:text-purple-300">Hello Rahul! 👋 I have analyzed your recent mock tests.</p>
+                            <p>You are performing exceptionally well in Quantitative Aptitude (98.4th percentile), but your accuracy in <strong>Seating Arrangement</strong> is only <strong>42%</strong>.</p>
+                            <div class="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-purple-300/40 text-[11px] space-y-1">
+                                <p class="font-bold text-slate-900 dark:text-white">Target Action Plan:</p>
+                                <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 space-y-1">
+                                    <li>Complete 20 Seating Arrangement Puzzles today</li>
+                                    <li>Attempt Mock Test #48 tomorrow morning</li>
+                                    <li>Review Data Interpretation Shortcuts</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Preset Quick Prompt Chips -->
+                <div class="p-3 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/40 flex flex-wrap gap-2 text-[11px]">
+                    <button onclick="sendAiPreset('Explain my mistakes in Mock #12')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold hover:border-purple-500 text-slate-700 dark:text-slate-300 transition">
+                        ⚡ Explain Mistakes in Mock #12
+                    </button>
+                    <button onclick="sendAiPreset('Generate 7-Day SBI Mains Strategy')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold hover:border-purple-500 text-slate-700 dark:text-slate-300 transition">
+                        🎯 7-Day SBI Mains Strategy
+                    </button>
+                    <button onclick="sendAiPreset('Predict SBI Cutoff Marks')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold hover:border-purple-500 text-slate-700 dark:text-slate-300 transition">
+                        📊 Predict SBI Cutoff
+                    </button>
+                </div>
+
+                <!-- Input Box -->
+                <div class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
+                    <input id="ai-user-input" type="text" placeholder="Ask AI Mentor anything about SBI PO..." class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button onclick="sendAiMessage()" class="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- FULL SCREEN REAL SBI EXAM INTERFACE SIMULATOR -->
+    <div id="exam-simulator-view" class="hidden fixed inset-0 z-50 bg-slate-100 dark:bg-[#070C18] flex flex-col font-sans select-none">
+        
+        <!-- SBI EXAM HEADER -->
+        <header class="bg-sbi-blue text-white px-4 py-2.5 flex items-center justify-between border-b border-sbi-navy shadow-md">
+            <div class="flex items-center gap-3">
+                <div class="bg-white text-sbi-blue font-extrabold text-sm px-2.5 py-1 rounded">SBI EXAM PORTAL</div>
+                <h2 id="exam-title-header" class="text-xs sm:text-sm font-bold truncate max-w-xs sm:max-w-md">SBI PO Prelims Full Mock Test #12</h2>
+            </div>
+
+            <!-- Timer & Actions -->
+            <div class="flex items-center gap-4 text-xs font-semibold">
+                <!-- Clock Timer -->
+                <div class="bg-sbi-navy/80 px-3 py-1.5 rounded-lg border border-sbi-lightBlue/40 flex items-center gap-2 text-amber-300 font-mono text-sm">
+                    <i class="fa-regular fa-clock animate-spin" style="animation-duration: 4s;"></i>
+                    <span id="exam-timer-display">00:59:45</span>
+                </div>
+
+                <button onclick="toggleExamPause()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-semibold transition">
+                    <i id="pause-btn-icon" class="fa-solid fa-pause mr-1"></i> <span id="pause-btn-text">Pause</span>
+                </button>
+
+                <button onclick="toggleFullScreen()" class="hidden sm:block px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-semibold transition">
+                    <i class="fa-solid fa-expand mr-1"></i> Full Screen
+                </button>
+            </div>
+        </header>
+
+        <!-- SECTION SWITCHER RIBBON (PRELIMS PATTERN) -->
+        <div class="bg-slate-200 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 px-4 py-1.5 flex items-center justify-between text-xs overflow-x-auto">
+            <div class="flex items-center gap-2" id="section-tabs-container">
+                <button onclick="switchExamSection(0)" id="sec-tab-0" class="sec-tab px-4 py-1.5 font-bold rounded bg-sbi-blue text-white shadow">
+                    English Language (30 Qs)
+                </button>
+                <button onclick="switchExamSection(1)" id="sec-tab-1" class="sec-tab px-4 py-1.5 font-bold rounded bg-slate-300 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-400">
+                    Quantitative Aptitude (35 Qs)
+                </button>
+                <button onclick="switchExamSection(2)" id="sec-tab-2" class="sec-tab px-4 py-1.5 font-bold rounded bg-slate-300 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-400">
+                    Reasoning Ability (35 Qs)
+                </button>
+            </div>
+            
+            <div class="text-[11px] font-semibold text-slate-600 dark:text-slate-400 hidden md:block">
+                Negative Marking: <strong class="text-red-500">-0.25</strong> per wrong answer
+            </div>
+        </div>
+
+        <!-- EXAM WORKSPACE GRID -->
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+            
+            <!-- LEFT / MIDDLE AREA: QUESTION & OPTIONS -->
+            <div class="flex-1 flex flex-col bg-white dark:bg-[#0B132B] border-r border-slate-200 dark:border-slate-800 overflow-y-auto">
+                
+                <!-- Question Top Meta Bar -->
+                <div class="p-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-900/50">
+                    <span class="font-bold text-slate-900 dark:text-white text-sm" id="question-number-heading">Question No. 1</span>
+                    
+                    <div class="flex items-center gap-4 text-slate-500">
+                        <span>Marks: <strong class="text-emerald-500">+1.0</strong>, <strong class="text-red-500">-0.25</strong></span>
+                        <button onclick="toggleBookmark()" id="bookmark-btn" class="hover:text-amber-500">
+                            <i class="fa-regular fa-bookmark mr-1"></i> Bookmark
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question Text & Passages -->
+                <div class="flex-1 p-6 space-y-6 text-sm text-slate-800 dark:text-slate-100 overflow-y-auto" id="question-content-box">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- FOOTER CONTROL BUTTONS (SBI standard: Save & Next, Clear, Mark for Review) -->
+                <div class="p-3 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+                    <div class="flex items-center gap-2">
+                        <button onclick="markForReviewAndNext()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded shadow transition">
+                            Mark for Review & Next
+                        </button>
+                        <button onclick="clearResponse()" class="px-4 py-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 text-slate-800 dark:text-slate-200 rounded transition">
+                            Clear Response
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="prevQuestion()" class="px-4 py-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 text-slate-800 dark:text-slate-200 rounded transition">
+                            <i class="fa-solid fa-chevron-left mr-1"></i> Previous
+                        </button>
+                        <button onclick="saveAndNext()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded shadow transition">
+                            Save & Next <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL: QUESTION PALETTE & CANDIDATE PROFILE -->
+            <div class="w-full md:w-80 bg-slate-50 dark:bg-[#070C18] flex flex-col border-t md:border-t-0 border-slate-200 dark:border-slate-800">
+                
+                <!-- Candidate Info Card -->
+                <div class="p-3 bg-slate-200 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 flex items-center gap-3">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="w-10 h-10 rounded-lg object-cover ring-2 ring-sbi-blue">
+                    <div class="text-xs">
+                        <h4 class="font-bold text-slate-900 dark:text-white">Appi baby</h4>
+                        <p class="text-[10px] text-slate-500">Roll No: 2026984210</p>
+                    </div>
+                </div>
+
+                <!-- Legend Summary -->
+                <div class="p-3 grid grid-cols-2 gap-2 text-[11px] font-semibold border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40">
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-4 status-answered flex items-center justify-center text-[9px]">1</span>
+                        <span>Answered</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-4 status-not-answered flex items-center justify-center text-[9px]">2</span>
+                        <span>Not Answered</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-4 status-not-visited flex items-center justify-center text-[9px]">3</span>
+                        <span>Not Visited</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-4 status-marked flex items-center justify-center text-[9px]">4</span>
+                        <span>Marked for Review</span>
+                    </div>
+                    <div class="col-span-2 flex items-center gap-2">
+                        <span class="w-5 h-4 status-ans-marked flex items-center justify-center text-[9px]">5</span>
+                        <span>Ans & Marked for Review</span>
+                    </div>
+                </div>
+
+                <!-- Palette Grid Header -->
+                <div class="px-3 py-2 bg-sbi-blue text-white text-xs font-bold flex justify-between items-center">
+                    <span>Question Palette</span>
+                    <span id="palette-section-title">Section: English</span>
+                </div>
+
+                <!-- Palette Buttons Grid -->
+                <div class="flex-1 p-3 overflow-y-auto grid grid-cols-5 gap-2 content-start" id="question-palette-grid">
+                    <!-- Populated dynamically (30 or 35 buttons) -->
+                </div>
+
+                <!-- SUBMIT EXAM CTA -->
+                <div class="p-3 bg-slate-200 dark:bg-slate-900 border-t border-slate-300 dark:border-slate-800">
+                    <button onclick="submitExamModal()" class="w-full py-2.5 bg-sbi-blue hover:bg-sbi-lightBlue text-white font-bold text-xs rounded-xl shadow-lg transition">
+                        Submit Test Paper
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- POST-TEST COMPREHENSIVE SCORECARD & ANALYTICS MODAL -->
+    <div id="scorecard-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-[#0B132B] border border-slate-200 dark:border-slate-800 rounded-3xl max-w-4xl w-full p-6 space-y-6 shadow-2xl my-8 relative">
+            
+            <button onclick="closeScorecardModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-2xl font-bold">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">SBI PO Mock Test #12 Performance Analysis</h2>
+                    <p class="text-xs text-slate-500">Attempted on Today, 08:30 AM • Pattern: Official SBI PO 2026</p>
+                </div>
+            </div>
+
+            <!-- Score Cards Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 text-center space-y-1">
+                    <span class="text-xs text-slate-500">Score Obtained</span>
+                    <div class="text-2xl font-extrabold text-sbi-blue dark:text-sbi-cyan">74.50 <span class="text-xs text-slate-400">/ 100</span></div>
+                    <span class="text-[10px] text-emerald-500 font-bold">Cutoff Cleared (63.0)</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 text-center space-y-1">
+                    <span class="text-xs text-slate-500">All India Rank</span>
+                    <div class="text-2xl font-extrabold text-amber-500">#84</div>
+                    <span class="text-[10px] text-slate-400 font-bold">out of 42,500 candidates</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 text-center space-y-1">
+                    <span class="text-xs text-slate-500">Percentile</span>
+                    <div class="text-2xl font-extrabold text-purple-500">99.1%</div>
+                    <span class="text-[10px] text-emerald-500 font-bold">Top 1% Performers</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 text-center space-y-1">
+                    <span class="text-xs text-slate-500">Accuracy</span>
+                    <div class="text-2xl font-extrabold text-emerald-500">88.2%</div>
+                    <span class="text-[10px] text-slate-400 font-bold">75 Correct / 10 Wrong</span>
+                </div>
+            </div>
+
+            <!-- Subject-wise Detailed Breakdown Table -->
+            <div class="space-y-2">
+                <h4 class="font-bold text-sm text-slate-900 dark:text-white">Subject-wise Breakdown</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 dark:bg-slate-900 text-slate-500">
+                            <tr>
+                                <th class="p-2.5">Subject</th>
+                                <th class="p-2.5">Attempted</th>
+                                <th class="p-2.5">Correct</th>
+                                <th class="p-2.5">Wrong</th>
+                                <th class="p-2.5">Negative</th>
+                                <th class="p-2.5">Time Spent</th>
+                                <th class="p-2.5 text-right">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                            <tr>
+                                <td class="p-2.5 font-bold">English Language</td>
+                                <td class="p-2.5">26 / 30</td>
+                                <td class="p-2.5 text-emerald-500 font-bold">24</td>
+                                <td class="p-2.5 text-red-500 font-bold">2</td>
+                                <td class="p-2.5 text-red-400">-0.50</td>
+                                <td class="p-2.5">16m 40s</td>
+                                <td class="p-2.5 text-right font-bold text-sbi-lightBlue">23.50</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold">Quantitative Aptitude</td>
+                                <td class="p-2.5">31 / 35</td>
+                                <td class="p-2.5 text-emerald-500 font-bold">28</td>
+                                <td class="p-2.5 text-red-500 font-bold">3</td>
+                                <td class="p-2.5 text-red-400">-0.75</td>
+                                <td class="p-2.5">21m 15s</td>
+                                <td class="p-2.5 text-right font-bold text-sbi-lightBlue">27.25</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold">Reasoning Ability</td>
+                                <td class="p-2.5">28 / 35</td>
+                                <td class="p-2.5 text-emerald-500 font-bold">23</td>
+                                <td class="p-2.5 text-red-500 font-bold">5</td>
+                                <td class="p-2.5 text-red-400">-1.25</td>
+                                <td class="p-2.5">21m 50s</td>
+                                <td class="p-2.5 text-right font-bold text-sbi-lightBlue">21.75</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Detailed Solutions Sample Box -->
+            <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-purple-700 dark:text-purple-300">AI Solution & Short-Trick Preview (Question #42 Quant)</span>
+                    <span class="px-2 py-0.5 bg-purple-500 text-white rounded font-bold text-[10px]">FASTER METHOD AVAILABLE</span>
+                </div>
+                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <strong>Question:</strong> Two pipes A and B can fill a tank in 12 min and 18 min respectively. If both pipes are opened simultaneously...
+                </p>
+                <div class="bg-white dark:bg-slate-900 p-3 rounded-xl text-xs space-y-1 font-mono text-slate-800 dark:text-slate-200">
+                    <p class="text-emerald-500 font-bold">✓ Short Trick Method (Vedic Efficiency Ratio):</p>
+                    <p>Total Work = LCM(12, 18) = 36 Units.</p>
+                    <p>Efficiency A = 3 u/min, Efficiency B = 2 u/min.</p>
+                    <p>Combined Efficiency = 5 u/min ➔ Time = 36/5 = 7.2 Mins (7 min 12 sec).</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeScorecardModal()" class="px-5 py-2 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs rounded-xl">
+                    Close Scorecard
+                </button>
+                <button onclick="toggleAiDrawer(); closeScorecardModal();" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow">
+                    Ask AI Mentor For Detailed Review
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- APP LOGIC & INTERACTION SCRIPT -->
+    <script>
+        /* -------------------------------------------------------------
+           1. MOCK DATA & STATE MANAGEMENT
+        ------------------------------------------------------------- */
+        let currentExamSection = 0;
+        let currentQuestionIndex = 0;
+        let examTimerSeconds = 3585; // 59m 45s
+        let timerInterval = null;
+        let violationCount = 0;
+        let isExamPaused = false;
+
+        const examQuestionsData = [
+            // Section 0: English (30 Qs mock sample)
+            {
+                section: "English Language",
+                passage: "Read the following passage carefully: The financial technology (Fintech) landscape in India has undergone a seismic shift in recent years, spearheaded by the adoption of Unified Payments Interface (UPI) and AI-driven credit assessment models. Central banks have increasingly emphasized consumer data privacy while encouraging open banking APIs...",
+                question: "According to the passage, what is the primary catalyst behind India's recent fintech shift?",
+                options: [
+                    "A) Strict physical branch expansion rules by RBI",
+                    "B) Rapid adoption of UPI and AI-driven credit assessment models",
+                    "C) Total replacement of cash with international credit cards",
+                    "D) Decline in smartphone user base across rural regions",
+                    "E) Elimination of open banking API frameworks"
+                ],
+                correctOption: 1,
+                userChoice: null,
+                status: 'status-not-visited' // status-not-visited, status-not-answered, status-answered, status-marked, status-ans-marked
+            },
+            {
+                section: "English Language",
+                passage: null,
+                question: "In the sentence below, identify the part containing a grammatical error: 'Neither the Branch Manager (A) / nor the senior clerks (B) / was present at the conference (C) / regarding NPA resolution (D) / No Error (E)'",
+                options: [
+                    "A) Neither the Branch Manager",
+                    "B) nor the senior clerks",
+                    "C) was present at the conference",
+                    "D) regarding NPA resolution",
+                    "E) No Error"
+                ],
+                correctOption: 2,
+                userChoice: null,
+                status: 'status-not-visited'
+            },
+            // Section 1: Quantitative Aptitude
+            {
+                section: "Quantitative Aptitude",
+                passage: null,
+                question: "Find the approximate value of (?) in the given equation: 439.98 ÷ 11.02 + 15.99 × 4.05 - 19.98 = ?",
+                options: [
+                    "A) 84",
+                    "B) 104",
+                    "C) 72",
+                    "D) 96",
+                    "E) 112"
+                ],
+                correctOption: 0,
+                userChoice: null,
+                status: 'status-not-visited'
+            },
+            // Section 2: Reasoning Ability
+            {
+                section: "Reasoning Ability",
+                passage: "Eight persons (A, B, C, D, E, F, G, H) are sitting around a circular table facing towards the center. A sits third to the left of B. Only two persons sit between B and C. G sits immediate right of C...",
+                question: "Who among the following sits third to the right of G?",
+                options: [
+                    "A) D",
+                    "B) E",
+                    "C) F",
+                    "D) A",
+                    "E) H"
+                ],
+                correctOption: 3,
+                userChoice: null,
+                status: 'status-not-visited'
+            }
+        ];
+
+        // Fill remaining questions dynamically for full palette feel
+        for (let i = 4; i <= 35; i++) {
+            examQuestionsData.push({
+                section: i <= 10 ? "English Language" : (i <= 22 ? "Quantitative Aptitude" : "Reasoning Ability"),
+                passage: null,
+                question: `Sample SBI PO High-Yield Exam Question #${i}: Evaluate the statement logic or calculate the value under 2026 examination rules.`,
+                options: [
+                    `Option A for Question #${i}`,
+                    `Option B for Question #${i}`,
+                    `Option C for Question #${i}`,
+                    `Option D for Question #${i}`,
+                    `Option E for Question #${i}`
+                ],
+                correctOption: (i % 5),
+                userChoice: null,
+                status: 'status-not-visited'
+            });
+        }
+
+        /* -------------------------------------------------------------
+           2. VIEW SWITCHING & NAVIGATION
+        ------------------------------------------------------------- */
+        function switchView(viewName) {
+            ['dashboard', 'mocks', 'leaderboard', 'study'].forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const btn = document.getElementById(`nav-${v}`);
+                if (el) el.classList.add('hidden');
+                if (btn) {
+                    btn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-sbi-blue', 'dark:text-sbi-cyan', 'shadow-sm');
+                    btn.classList.add('text-slate-600', 'dark:text-slate-400');
+                }
+            });
+
+            const activeEl = document.getElementById(`view-${viewName}`);
+            const activeBtn = document.getElementById(`nav-${viewName}`);
+            if (activeEl) activeEl.classList.remove('hidden');
+            if (activeBtn) {
+                activeBtn.classList.add('bg-white', 'dark:bg-slate-800', 'text-sbi-blue', 'dark:text-sbi-cyan', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
+            }
+
+            if (viewName === 'mocks') renderMocksGrid();
+            if (viewName === 'leaderboard') renderLeaderboard();
+        }
+
+        /* -------------------------------------------------------------
+           3. CHARTS INITIALIZATION (Chart.js)
+        ------------------------------------------------------------- */
+        function initCharts() {
+            // Trend Line Chart
+            const ctxTrend = document.getElementById('performanceTrendChart')?.getContext('2d');
+            if (ctxTrend) {
+                new Chart(ctxTrend, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mock 1', 'Mock 2', 'Mock 3', 'Mock 4', 'Mock 5', 'Mock 6', 'Mock 7', 'Mock 8', 'Mock 9', 'Mock 10'],
+                        datasets: [
+                            {
+                                label: 'Your Score',
+                                data: [54, 58, 61, 59, 66, 68, 72, 70, 75, 74.5],
+                                borderColor: '#00A3E0',
+                                backgroundColor: 'rgba(0, 163, 224, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                borderWidth: 3,
+                                pointBackgroundColor: '#00F2FE'
+                            },
+                            {
+                                label: 'SBI PO Cutoff (Gen)',
+                                data: [63, 63, 63, 63, 63, 63, 63, 63, 63, 63],
+                                borderColor: '#EF4444',
+                                borderDash: [5, 5],
+                                borderWidth: 2,
+                                fill: false,
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#94A3B8', font: { family: 'Plus Jakarta Sans', size: 11 } } }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: '#94A3B8' } },
+                            y: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94A3B8' } }
+                        }
+                    }
+                });
+            }
+
+            // Radar Chart for Subject Mastery
+            const ctxRadar = document.getElementById('subjectRadarChart')?.getContext('2d');
+            if (ctxRadar) {
+                new Chart(ctxRadar, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Quant (DI)', 'Reasoning (Puzzles)', 'English Vocab', 'Banking Awareness', 'Speed Math', 'Grammar'],
+                        datasets: [{
+                            label: 'Mastery Level (%)',
+                            data: [82, 42, 88, 75, 94, 65],
+                            backgroundColor: 'rgba(124, 77, 255, 0.25)',
+                            borderColor: '#7C4DFF',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#00F2FE'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(148, 163, 184, 0.2)' },
+                                grid: { color: 'rgba(148, 163, 184, 0.2)' },
+                                pointLabels: { color: '#94A3B8', font: { size: 10 } },
+                                ticks: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        /* -------------------------------------------------------------
+           4. MOCK TESTS DIRECTORY & LEADERBOARD RENDERING
+        ------------------------------------------------------------- */
+        function renderMocksGrid() {
+            const container = document.getElementById('mocks-grid-container');
+            if (!container) return;
+            let html = '';
+            for (let i = 1; i <= 9; i++) {
+                html += `
+                    <div class="glass-card p-5 rounded-2xl space-y-3 hover:border-sbi-lightBlue transition">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="px-2 py-0.5 rounded bg-sbi-blue/10 text-sbi-lightBlue font-bold">FULL LENGTH MOCK #${i}</span>
+                            <span class="text-emerald-500 font-bold"><i class="fa-solid fa-sparkles"></i> AI Verified</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white">SBI PO Prelims All-India Mock Test #${i}</h4>
+                        <div class="flex items-center justify-between text-xs text-slate-500">
+                            <span>100 Qs • 60 Mins</span>
+                            <span>100 Marks</span>
+                        </div>
+                        <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                            <span class="text-[11px] text-slate-400 font-semibold">${12000 + i * 450} Candidates</span>
+                            <button onclick="launchExamModal('SBI PO Prelims All-India Mock Test #${i}')" class="px-3.5 py-1.5 bg-sbi-blue hover:bg-sbi-lightBlue text-white font-bold text-xs rounded-xl shadow transition">
+                                Start Test
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function renderLeaderboard() {
+            const body = document.getElementById('leaderboard-table-body');
+            if (!body) return;
+            const mockData = [
+                { rank: 4, name: 'Siddharth Rao', state: 'Karnataka', test: 'Mock #12', acc: '94%', time: '48m 10s', score: '86.50' },
+                { rank: 5, name: 'Meera Deshmukh', state: 'Maharashtra', test: 'Mock #12', acc: '92%', time: '51m 20s', score: '84.75' },
+                { rank: 6, name: 'Rohan Sharma (You)', state: 'Delhi NCR', test: 'Mock #12', acc: '88%', time: '54m 45s', score: '74.50', isUser: true },
+                { rank: 7, name: 'Kavita Nair', state: 'Kerala', test: 'Mock #12', acc: '86%', time: '52m 10s', score: '73.25' },
+                { rank: 8, name: 'Amitabh Sen', state: 'West Bengal', test: 'Mock #12', acc: '85%', time: '55m 00s', score: '72.00' }
+            ];
+            let html = '';
+            mockData.forEach(item => {
+                html += `
+                    <tr class="${item.isUser ? 'bg-sbi-blue/10 dark:bg-sbi-blue/20 font-bold border-l-4 border-sbi-lightBlue' : 'hover:bg-slate-50 dark:hover:bg-slate-900/40'}">
+                        <td class="py-3 px-4 font-bold text-slate-900 dark:text-white">#${item.rank}</td>
+                        <td class="py-3 px-4 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-slate-300 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold">${item.name[0]}</span>
+                            <span>${item.name}</span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-500">${item.state}</td>
+                        <td class="py-3 px-4 text-slate-500">${item.test}</td>
+                        <td class="py-3 px-4 text-emerald-500 font-semibold">${item.acc}</td>
+                        <td class="py-3 px-4 text-slate-500">${item.time}</td>
+                        <td class="py-3 px-4 text-right font-extrabold text-sbi-lightBlue">${item.score}</td>
+                    </tr>
+                `;
+            });
+            body.innerHTML = html;
+        }
+
+        /* -------------------------------------------------------------
+           5. REAL EXAM INTERFACE CONTROLLER
+        ------------------------------------------------------------- */
+        function launchExamModal(testTitle) {
+            document.getElementById('exam-title-header').innerText = testTitle;
+            document.getElementById('exam-simulator-view').classList.remove('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('main-footer').classList.add('hidden');
+            
+            currentQuestionIndex = 0;
+            renderQuestion(0);
+            renderPalette();
+            startExamTimer();
+            setupAntiCheat();
+        }
+
+        function renderQuestion(index) {
+            currentQuestionIndex = index;
+            const q = examQuestionsData[index];
+            if (!q) return;
+
+            if (q.status === 'status-not-visited') {
+                q.status = 'status-not-answered';
+            }
+
+            document.getElementById('question-number-heading').innerText = `Question No. ${index + 1}`;
+            
+            const contentBox = document.getElementById('question-content-box');
+            let passageHtml = q.passage ? `
+                <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs leading-relaxed font-serif">
+                    <strong class="block mb-2 text-sbi-blue dark:text-sbi-cyan font-sans uppercase tracking-wider font-bold">Directions / Context Passage:</strong>
+                    ${q.passage}
+                </div>
+            ` : '';
+
+            let optionsHtml = q.options.map((opt, i) => `
+                <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 cursor-pointer hover:border-sbi-lightBlue hover:bg-sbi-blue/5 transition">
+                    <input type="radio" name="exam-option" value="${i}" ${q.userChoice === i ? 'checked' : ''} onchange="selectOption(${i})" class="w-4 h-4 text-sbi-blue focus:ring-sbi-lightBlue">
+                    <span class="text-xs font-medium text-slate-800 dark:text-slate-200">${opt}</span>
+                </label>
+            `).join('');
+
+            contentBox.innerHTML = `
+                ${passageHtml}
+                <div class="font-bold text-sm text-slate-900 dark:text-white leading-relaxed">
+                    ${q.question}
+                </div>
+                <div class="space-y-2.5 pt-2">
+                    ${optionsHtml}
+                </div>
+            `;
+
+            renderPalette();
+        }
+
+        function selectOption(optionIndex) {
+            examQuestionsData[currentQuestionIndex].userChoice = optionIndex;
+        }
+
+        function saveAndNext() {
+            const q = examQuestionsData[currentQuestionIndex];
+            if (q.userChoice !== null) {
+                q.status = 'status-answered';
+            }
+            if (currentQuestionIndex < examQuestionsData.length - 1) {
+                renderQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        function markForReviewAndNext() {
+            const q = examQuestionsData[currentQuestionIndex];
+            if (q.userChoice !== null) {
+                q.status = 'status-ans-marked';
+            } else {
+                q.status = 'status-marked';
+            }
+            if (currentQuestionIndex < examQuestionsData.length - 1) {
+                renderQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        function clearResponse() {
+            const q = examQuestionsData[currentQuestionIndex];
+            q.userChoice = null;
+            q.status = 'status-not-answered';
+            renderQuestion(currentQuestionIndex);
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                renderQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function renderPalette() {
+            const grid = document.getElementById('question-palette-grid');
+            if (!grid) return;
+
+            let html = '';
+            examQuestionsData.forEach((q, idx) => {
+                const isCurrent = idx === currentQuestionIndex;
+                html += `
+                    <div onclick="renderQuestion(${idx})" class="sbi-palette-btn ${q.status} ${isCurrent ? 'ring-2 ring-sbi-cyan ring-offset-2 dark:ring-offset-slate-900 scale-105' : ''}">
+                        ${idx + 1}
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        function switchExamSection(secIdx) {
+            currentExamSection = secIdx;
+            document.querySelectorAll('.sec-tab').forEach((tab, i) => {
+                if (i === secIdx) {
+                    tab.className = "sec-tab px-4 py-1.5 font-bold rounded bg-sbi-blue text-white shadow";
+                } else {
+                    tab.className = "sec-tab px-4 py-1.5 font-bold rounded bg-slate-300 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-400";
+                }
+            });
+            const sectionTitles = ["English", "Quantitative Aptitude", "Reasoning Ability"];
+            document.getElementById('palette-section-title').innerText = `Section: ${sectionTitles[secIdx]}`;
+            
+            // Jump to first question of section
+            const startIdx = secIdx === 0 ? 0 : (secIdx === 1 ? 2 : 3);
+            renderQuestion(startIdx);
+        }
+
+        function startExamTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (!isExamPaused && examTimerSeconds > 0) {
+                    examTimerSeconds--;
+                    const h = String(Math.floor(examTimerSeconds / 3600)).padStart(2, '0');
+                    const m = String(Math.floor((examTimerSeconds % 3600) / 60)).padStart(2, '0');
+                    const s = String(examTimerSeconds % 60).padStart(2, '0');
+                    document.getElementById('exam-timer-display').innerText = `${h}:${m}:${s}`;
+                }
+            }, 1000);
+        }
+
+        function toggleExamPause() {
+            isExamPaused = !isExamPaused;
+            document.getElementById('pause-btn-text').innerText = isExamPaused ? 'Resume' : 'Pause';
+            document.getElementById('pause-btn-icon').className = isExamPaused ? 'fa-solid fa-play mr-1' : 'fa-solid fa-pause mr-1';
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        /* -------------------------------------------------------------
+           6. ANTI-CHEAT DETECTION
+        ------------------------------------------------------------- */
+        function setupAntiCheat() {
+            window.onblur = function() {
+                if (!document.getElementById('exam-simulator-view').classList.contains('hidden')) {
+                    violationCount++;
+                    document.getElementById('violation-count').innerText = violationCount;
+                    document.getElementById('anti-cheat-alert').classList.remove('hidden');
+                }
+            };
+        }
+
+        function resumeFromViolation() {
+            document.getElementById('anti-cheat-alert').classList.add('hidden');
+        }
+
+        function submitExamModal() {
+            if (confirm("Are you sure you want to submit your SBI PO Mock Test paper?")) {
+                clearInterval(timerInterval);
+                document.getElementById('exam-simulator-view').classList.add('hidden');
+                document.getElementById('main-header').classList.remove('hidden');
+                document.getElementById('main-footer').classList.remove('hidden');
+                openScorecardModal();
+            }
+        }
+
+        function openScorecardModal() {
+            document.getElementById('scorecard-modal').classList.remove('hidden');
+        }
+        function closeScorecardModal() {
+            document.getElementById('scorecard-modal').classList.add('hidden');
+        }
+
+        /* -------------------------------------------------------------
+           7. AI TUTOR DRAWER & CHAT
+        ------------------------------------------------------------- */
+        function toggleAiDrawer() {
+            const drawer = document.getElementById('ai-tutor-drawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function sendAiMessage() {
+            const input = document.getElementById('ai-user-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            appendUserChatMessage(text);
+            input.value = '';
+
+            setTimeout(() => {
+                appendAiChatMessage(`AI Diagnostic: Based on your question "${text}", our model suggests reviewing SBI Mains 2025 Memory Based Papers for Circular Seating Arrangement. Your speed is currently 3.2 mins/puzzle, target < 2.0 mins.`);
+            }, 600);
+        }
+
+        function sendAiPreset(presetText) {
+            appendUserChatMessage(presetText);
+            setTimeout(() => {
+                appendAiChatMessage(`AI Analysis for "${presetText}": Generating personalized step-by-step breakdown. Your selection probability is currently 86%. Regular practice on speed math can elevate this to 94%.`);
+            }, 500);
+        }
+
+        function appendUserChatMessage(msg) {
+            const body = document.getElementById('ai-chat-body');
+            const html = `
+                <div class="flex justify-end">
+                    <div class="bg-sbi-blue text-white p-3 rounded-2xl rounded-tr-none max-w-[80%]">
+                        <p>${msg}</p>
+                    </div>
+                </div>
+            `;
+            body.insertAdjacentHTML('beforeend', html);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function appendAiChatMessage(msg) {
+            const body = document.getElementById('ai-chat-body');
+            const html = `
+                <div class="flex items-start gap-3">
+                    <div class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs flex-shrink-0">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/50 p-3 rounded-2xl rounded-tl-none text-slate-800 dark:text-slate-200 space-y-1 max-w-[85%]">
+                        <p>${msg}</p>
+                    </div>
+                </div>
+            `;
+            body.insertAdjacentHTML('beforeend', html);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        /* -------------------------------------------------------------
+           8. THEME & PDF SIMULATOR
+        ------------------------------------------------------------- */
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'fa-solid fa-sun text-base text-amber-500';
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-moon text-base';
+            }
+        }
+
+        function downloadStudyPdf(filename) {
+            alert(`[SBI MASTER DOWNLOAD] Starting secure download for ${filename}...`);
+        }
+
+        // Initialize Charts on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+        });
+    </script>
+</body>
+</html>
